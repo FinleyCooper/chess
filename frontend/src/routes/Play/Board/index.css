@@ -1,0 +1,41 @@
+/* Chess board */
+
+.board {
+    position: relative;
+}
+
+.squares {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+
+.chess-piece {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    cursor: pointer;
+}
+
+.temp,
+.move-reversing {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+.testing-number {
+    position: relative;
+    top: 0;
+    right: 0;
+    transform: translate(25%, -50%);
+    font-size: 50px;
+    font-family: sans-serif;
+    z-index: 10;
+    color: rgb(161, 170, 226);
+    pointer-events: none;
+    opacity: 0.65;
+    /* display: none; */
+}

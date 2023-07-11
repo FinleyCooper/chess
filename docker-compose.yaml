@@ -1,0 +1,14 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: nea-backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: nea-frontend
+    ports:
+      - 8000:80
