@@ -1,1 +1,1 @@
-# AQA NEA Development Repository
+# AQA NEA - Adaptive Chess Engine
