@@ -1,8 +1,8 @@
-import MoveGenerator from '../MoveGenerator'
+import Board from '../Board'
 
 // Function implimentation copied from a function written in C
 // https://www.chessprogramming.org/Perft
-export function perft(depth: number, generator: MoveGenerator) {
+export function perft(depth: number, board: Board) {
     const maxDepth = depth
 
     function testAtDepth(depth: number) {
@@ -13,12 +13,12 @@ export function perft(depth: number, generator: MoveGenerator) {
             return 1
         }
 
-        moveList = generator.generateLegalMoves()
+        moveList = board.generateLegalMoves()
 
         for (let i = 0; i < moveList.length; i++) {
-            generator.board.playMove(moveList[i])
+            board.playMove(moveList[i])
             nodes += testAtDepth(depth - 1)
-            generator.board.unplayMove(moveList[i])
+            board.unplayMove(moveList[i])
         }
 
 

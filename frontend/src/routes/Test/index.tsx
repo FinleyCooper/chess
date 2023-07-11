@@ -1,15 +1,14 @@
 import React from "react"
 import { perft as syncPerft } from "./../../engine/Testing/perftTesting"
 import Board from "./../../engine/Board"
-import MoveGenerator from "../../engine/MoveGenerator"
 import testPositions from "./positions"
 
 import "./index.css"
 
-const perft = (depth: number, generator: MoveGenerator): Promise<number> => {
+const perft = (depth: number, board: Board): Promise<number> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            const nodes = syncPerft(depth, generator)
+            const nodes = syncPerft(depth, board)
             resolve(nodes)
         }, 0)
     })
@@ -23,7 +22,7 @@ interface State {
     ellapsedTime: number;
 }
 
-const depthBelowMax = 2
+const depthBelowMax = 0
 
 class TestingPage extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -71,7 +70,7 @@ class TestingPage extends React.Component<Props, State> {
                     continue
                 }
 
-                const generator = new MoveGenerator(new Board(testPositions[i].board, testPositions[i].gameState))
+                const generator = new Board(testPositions[i].board, testPositions[i].gameState)
 
                 const depth = searchDepth
 

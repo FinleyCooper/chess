@@ -1,14 +1,12 @@
 import Board from './Board'
-import MoveGenerator from './MoveGenerator'
 import { StartingBoard, Pieces } from './constants'
 
 
 export function getStartingPosition(): Array<any> {
     const board = new Board(StartingBoard, 0x000)
-    const generator = new MoveGenerator(board)
-    const moveList = generator.generateBinaryUCILegalMoves()
+    const moveList = board.generateBinaryUCILegalMoves()
 
-    return [StartingBoard, Pieces.white, 0x000, moveList]
+    return [board.toBinary(), Pieces.white, 0x000, moveList]
 }
 
 export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array, sideToMove: number, boardData: number, TESTING_REVERSEMOVES: boolean): Array<any> {
@@ -18,12 +16,10 @@ export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array,
 
     board.playUCIMove(from, to)
 
-
-    const generator = new MoveGenerator(board)
-    const moveList = generator.generateBinaryUCILegalMoves()
+    const moveList = board.generateBinaryUCILegalMoves()
 
     if (moveList.length === 0) {
-        if (generator.isCheck()) {
+        if (board.isCheck()) {
             console.log('Checkmate')
         }
         else {
@@ -31,5 +27,5 @@ export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array,
         }
     }
 
-    return [board.boardList, board.sideToMove, board.getBoardData(), moveList]
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList]
 }

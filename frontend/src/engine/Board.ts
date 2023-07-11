@@ -1,10 +1,10 @@
 import { Pieces } from './constants'
-import Piece from './Piece'
 import Move from './Move'
 import SquareCollection from './SquareCollection'
+import Piece from './Pieces'
+import BasePiece from './Pieces/BasePiece'
 
 class Board {
-    boardList: Uint8Array
     sideToMove: number
     epFile: number
     castlingRights: number
@@ -12,11 +12,10 @@ class Board {
     pieceCapturedPlyBefore: number
     pastGameStateStack: Array<number>
 
-    square: Array<Pieces>
+    square: Array<BasePiece>
     collections: Array<Array<SquareCollection>>
 
-    constructor(board: Uint8Array, gameState: number) {
-        this.boardList = board
+    constructor(binaryBoard: Uint8Array, gameState: number) {
         this.pastGameStateStack = [] // LIFO stack
 
         this.sideToMoveIndex = (gameState & 0b1) // 0 is white and 1 is black
@@ -25,7 +24,7 @@ class Board {
         this.castlingRights = (gameState & 0b111100000) >> 5
         this.pieceCapturedPlyBefore = (gameState & 0b111000000000) >> 9
 
-        this.square = []
+        this.square = Array(64).fill(new Piece.Empty())
 
         this.collections = [
             [new SquareCollection(), new SquareCollection()], // All     : index 0
@@ -38,11 +37,12 @@ class Board {
         ]
 
 
-        for (let i = 0; i < this.boardList.length; i++) {
-            if (this.boardList[i] !== 0) {
-                const piece = new Piece(this.boardList[i])
-                const colourIndex: number = +piece.isColour(Pieces.black)
-                this.collections[piece.getType()][colourIndex].add(i)
+        for (let i = 0; i < binaryBoard.length; i++) {
+            this.square[i] = Piece.FromBinary(binaryBoard[i])
+
+            if (binaryBoard[i] !== 0) {
+                const colourIndex = +this.square[i].isColour(Pieces.black)
+                this.collections[this.square[i].getType()][colourIndex].add(i)
             }
         }
 
@@ -65,8 +65,8 @@ class Board {
     playUCIMove(from: number, to: number) {
         let move: Move
 
-        const movedPiece = new Piece(this.boardList[from])
-        const destPiece = new Piece(this.boardList[to])
+        const movedPiece = this.square[from]
+        const destPiece = this.square[to]
 
         // Double pawn move - If we're moving a pawn and it moves 16 squares
         if (movedPiece.getType() == Pieces.pawn && Math.abs(from - to) === 16) {
@@ -80,7 +80,7 @@ class Board {
 
         // Promotion
         else if (movedPiece.getType() == Pieces.pawn && Math.floor(to / 8) == 7) {
-            if (this.boardList[to] === Pieces.empty) {
+            if (this.square[to].getType() === Pieces.empty) {
                 move = Move.fromCharacteristics(to, from, false, false, false, 0, 0b011)
             }
             else {
@@ -98,7 +98,7 @@ class Board {
         }
 
         // Capture
-        else if (this.boardList[to] !== Pieces.empty) {
+        else if (this.square[to].getType() !== Pieces.empty) {
             move = Move.fromCharacteristics(to, from, true)
         }
         // Quiet Move
@@ -119,7 +119,7 @@ class Board {
         const dest = move.getDestinationSquare()
         const source = move.getSourceSquare()
 
-        const piece = new Piece(this.boardList[source])
+        const piece = this.square[source]
 
         const colourOffset = piece.isColour(Pieces.white) ? 0 : 56
 
@@ -127,7 +127,7 @@ class Board {
 
         // Remove piece from source square
         // In the square-oriented data structure
-        this.boardList[source] = Pieces.empty
+        this.square[source] = new Piece.Empty()
 
         // And in the piece-oriented data structure
         this.collections[piece.getType()][piece.getColourIndex()].remove(source)
@@ -141,7 +141,7 @@ class Board {
             // Only pawns can be en-passanted
             this.collections[Pieces.pawn][piece.getOpponentColourIndex()].remove(enPassantSquare)
 
-            this.boardList[enPassantSquare] = Pieces.empty
+            this.square[enPassantSquare] = new Piece.Empty()
         }
 
         // Castling - KS
@@ -149,8 +149,8 @@ class Board {
             this.collections[Pieces.rook][piece.getColourIndex()].remove(7 + colourOffset)
             this.collections[Pieces.rook][piece.getColourIndex()].add(5 + colourOffset)
 
-            this.boardList[7 + colourOffset] = Pieces.empty
-            this.boardList[5 + colourOffset] = Pieces.rook | piece.getColour()
+            this.square[7 + colourOffset] = new Piece.Empty()
+            this.square[5 + colourOffset] = new Piece.Rook(piece.getColour())
         }
 
         // Castling - QS
@@ -158,14 +158,14 @@ class Board {
             this.collections[Pieces.rook][piece.getColourIndex()].remove(0 + colourOffset)
             this.collections[Pieces.rook][piece.getColourIndex()].add(3 + colourOffset)
 
-            this.boardList[0 + colourOffset] = Pieces.empty
-            this.boardList[3 + colourOffset] = Pieces.rook | piece.getColour()
+            this.square[0 + colourOffset] = new Piece.Empty()
+            this.square[3 + colourOffset] = new Piece.Rook(piece.getColour())
         }
 
 
         // If the move is a capture we will have to remove the captured piece from its collection (unless en-passant, but that is handled seperately)
         else if (move.isCapture()) {
-            const capturedPiece = new Piece(this.boardList[dest])
+            const capturedPiece = this.square[dest]
 
             if (capturedPiece.getType() === Pieces.rook) {
                 const shift = capturedPiece.isColour(Pieces.white) ? 0 : 2
@@ -207,11 +207,11 @@ class Board {
         let destinationPiece = piece
 
         if (move.isPromotion()) {
-            destinationPiece = new Piece(piece.getColour() | move.getPromotionPiece())
+            destinationPiece = Piece.FromBinary(piece.getColour() | move.getPromotionPiece())
         }
 
         // Add the piece in the square-oriented data structure. This will automatically take care of non-enpassant captures
-        this.boardList[dest] = destinationPiece.datum
+        this.square[dest] = destinationPiece
         // Add the piece into the piece-oriented data structure
         this.collections[destinationPiece.getType()][destinationPiece.getColourIndex()].add(dest)
 
@@ -251,39 +251,39 @@ class Board {
 
         const pieceCapturedLastPly = this.pieceCapturedPlyBefore === Pieces.empty ? Pieces.empty : this.pieceCapturedPlyBefore | opponentColour
 
+        let piece = this.square[dest]
 
-        let piece = new Piece(this.boardList[dest])
         const colourOffset = piece.isColour(Pieces.white) ? 0 : 56
 
         // Removed moved piece from data strucutures and replace it with an empty square or the captured piece
-        this.boardList[dest] = pieceCapturedLastPly
+        this.square[dest] = Piece.FromBinary(pieceCapturedLastPly)
         this.collections[piece.getType()][this.sideToMoveIndex].remove(dest)
 
         // Handle en passant
         if (move.isEnPassant()) {
             const enPassantOffset = piece.isColour(Pieces.white) ? -8 : 8
 
-            this.boardList[dest + enPassantOffset] = Pieces.pawn | opponentColour
+            this.square[dest + enPassantOffset] = new Piece.Pawn(opponentColour)
             this.collections[Pieces.pawn][opponentMoveIndex].add(dest + enPassantOffset)
         }
         else if (move.isPromotion()) {
-            piece = new Piece(Pieces.pawn | this.sideToMove)
+            piece = new Piece.Pawn(this.sideToMove)
         }
         // KS castling
         else if (flag === 0b0010) {
             this.collections[Pieces.rook][this.sideToMoveIndex].remove(5 + colourOffset)
             this.collections[Pieces.rook][this.sideToMoveIndex].add(7 + colourOffset)
 
-            this.boardList[5 + colourOffset] = Pieces.empty
-            this.boardList[7 + colourOffset] = Pieces.rook | this.sideToMove
+            this.square[5 + colourOffset] = new Piece.Empty()
+            this.square[7 + colourOffset] = new Piece.Rook(this.sideToMove)
         }
         // QS castling
         else if (flag === 0b0011) {
             this.collections[Pieces.rook][this.sideToMoveIndex].remove(3 + colourOffset)
             this.collections[Pieces.rook][this.sideToMoveIndex].add(0 + colourOffset)
 
-            this.boardList[3 + colourOffset] = Pieces.empty
-            this.boardList[0 + colourOffset] = Pieces.rook | this.sideToMove
+            this.square[3 + colourOffset] = new Piece.Empty()
+            this.square[0 + colourOffset] = new Piece.Rook(this.sideToMove)
         }
         // Will also take care of promotion captures
         if (move.isCapture() && !move.isEnPassant()) {
@@ -291,7 +291,7 @@ class Board {
         }
 
         // Source square replace with the moved piece
-        this.boardList[source] = piece.datum
+        this.square[source] = piece
         this.collections[piece.getType()][this.sideToMoveIndex].add(source)
 
         this.castlingRights = (newGameState & 0b111100000) >> 5
@@ -300,8 +300,85 @@ class Board {
         this.updateAllPieceCollection()
     }
 
+    isSquareAttacked(square: number, attackerColour: number): boolean {
+        const attackerColourIndex = attackerColour === Pieces.white ? 0 : 1
+        const defenderColour = attackerColourIndex == 0 ? Pieces.black : Pieces.white
+        const blockers = this.collections[Pieces.all][attackerColourIndex].bitboard | this.collections[Pieces.all][1 - attackerColourIndex].bitboard
+
+        // Looping over all pieces binary values
+
+        for (let i = 1; i < Pieces.king + 1; i++) {
+            const piece = Piece.FromBinary(i | defenderColour)
+
+            if (piece.getAttacks(square, blockers) & this.collections[i][attackerColourIndex].bitboard) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    generateLegalMoves(): Array<Move> {
+        let moveList: Array<Move> = []
+
+        for (let i = 0; i < 64; i++) {
+            if (this.square[i].isColour(this.sideToMove)) {
+                moveList.push(...this.square[i].getLegalMoves(i, this))
+            }
+        }
+
+        const sideToPlay = this.sideToMove
+
+        moveList = moveList.filter(move => {
+            this.playMove(move)
+
+            let isLegal = true
+
+            if (this.isCheck(sideToPlay)) {
+                isLegal = false
+            }
+
+            this.unplayMove(move)
+
+
+
+            return isLegal
+        })
+
+        return moveList
+    }
+
+    isCheck(sideToPlay: number = this.sideToMove) {
+        const sideToPlayIndex = sideToPlay === Pieces.white ? 0 : 1
+        const opponentColour = sideToPlay === Pieces.white ? Pieces.black : Pieces.white
+        const kingBitboard = this.collections[Pieces.king][sideToPlayIndex]
+
+        let kingPosition = 0n
+        while (kingBitboard.bitboard >> kingPosition !== 1n) {
+            kingPosition++
+        }
+
+        return this.isSquareAttacked(Number(kingPosition), opponentColour)
+
+    }
+
     getBoardData() {
         return this.getGameState() >> 1
+    }
+
+    generateBinaryUCILegalMoves() {
+        const moveList: Array<Move> = this.generateLegalMoves()
+        return [...new Set(moveList.map(move => move.toBinaryUCI()))]
+    }
+
+    toBinary() {
+        let binaryBoard = new Uint8Array(64)
+
+        for (let i = 0; i < 64; i++) {
+            binaryBoard[i] = this.square[i].datum
+        }
+
+        return binaryBoard
     }
 }
 
