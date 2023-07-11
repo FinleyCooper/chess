@@ -14,9 +14,6 @@ export default class MoveGenerator {
     }
 
     isSquareAttacked(square: number, attackerColour: number, a: number = 0) {
-        // if (a) {
-        //     debugger
-        // }
         const attackerColourIndex = attackerColour === Pieces.white ? 0 : 1
         const defenderColour = attackerColourIndex == 0 ? Pieces.black : Pieces.white
         const blockers = this.board.collections[Pieces.all][attackerColourIndex].bitboard | this.board.collections[Pieces.all][1 - attackerColourIndex].bitboard
@@ -47,6 +44,7 @@ export default class MoveGenerator {
 
     generateLegalMoves() {
         let moveList: Array<Move> = []
+
 
         for (const square of this.board.collections[Pieces.pawn][this.board.sideToMoveIndex]) {
             moveList.push(...this.generatePawnMoves(square, this.board.sideToMove, this.board))

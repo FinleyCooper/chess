@@ -9,7 +9,8 @@ import "./index.css"
 const perft = (depth: number, generator: MoveGenerator): Promise<number> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            syncPerft(depth, generator, resolve)
+            const nodes = syncPerft(depth, generator)
+            resolve(nodes)
         }, 0)
     })
 }
@@ -22,7 +23,7 @@ interface State {
     ellapsedTime: number;
 }
 
-const depthBelowMax = 1
+const depthBelowMax = 2
 
 class TestingPage extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -126,6 +127,8 @@ class TestingPage extends React.Component<Props, State> {
             )
         }
 
+        const totalNodesSearched = this.state.results.flat().reduce((t, v) => t + v, 0);
+
         return (
             <div className="result-page">
                 <div className="results">
@@ -135,7 +138,7 @@ class TestingPage extends React.Component<Props, State> {
                     Performance Testing
                 </div>
                 <div className="time">
-                    {this.state.ellapsedTime === -1 ? "" : `${this.state.ellapsedTime} ms ellapsed`}
+                    {this.state.ellapsedTime === -1 ? "" : `${this.state.ellapsedTime / 1000} seconds ellapsed KN/s = ${Math.round(totalNodesSearched / (this.state.ellapsedTime))}`}
                 </div>
             </div>
         )

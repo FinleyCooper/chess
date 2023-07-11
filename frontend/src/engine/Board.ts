@@ -12,6 +12,7 @@ class Board {
     pieceCapturedPlyBefore: number
     pastGameStateStack: Array<number>
 
+    square: Array<Pieces>
     collections: Array<Array<SquareCollection>>
 
     constructor(board: Uint8Array, gameState: number) {
@@ -23,6 +24,8 @@ class Board {
         this.epFile = (gameState & 0b11110) >> 1
         this.castlingRights = (gameState & 0b111100000) >> 5
         this.pieceCapturedPlyBefore = (gameState & 0b111000000000) >> 9
+
+        this.square = []
 
         this.collections = [
             [new SquareCollection(), new SquareCollection()], // All     : index 0
@@ -39,27 +42,7 @@ class Board {
             if (this.boardList[i] !== 0) {
                 const piece = new Piece(this.boardList[i])
                 const colourIndex: number = +piece.isColour(Pieces.black)
-
-                switch (piece.getType()) {
-                    case Pieces.pawn:
-                        this.collections[Pieces.pawn][colourIndex].add(i)
-                        break;
-                    case Pieces.rook:
-                        this.collections[Pieces.rook][colourIndex].add(i)
-                        break;
-                    case Pieces.knight:
-                        this.collections[Pieces.knight][colourIndex].add(i)
-                        break;
-                    case Pieces.bishop:
-                        this.collections[Pieces.bishop][colourIndex].add(i)
-                        break;
-                    case Pieces.queen:
-                        this.collections[Pieces.queen][colourIndex].add(i)
-                        break;
-                    case Pieces.king:
-                        this.collections[Pieces.king][colourIndex].add(i)
-                        break;
-                }
+                this.collections[piece.getType()][colourIndex].add(i)
             }
         }
 
