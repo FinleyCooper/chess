@@ -19,7 +19,6 @@ interface State {
 interface Props {
     mouseX: number;
     mouseY: number;
-    startingPosition: Uint8Array;
 }
 
 class Board extends React.Component<Props, State> {
@@ -29,9 +28,6 @@ class Board extends React.Component<Props, State> {
         super(props)
 
         this.boardRef = React.createRef()
-
-        this.TESTING_button = this.TESTING_button.bind(this)
-
 
         this.state = {
             board: new Uint8Array(Array(64).fill(Pieces.empty)),
@@ -44,28 +40,17 @@ class Board extends React.Component<Props, State> {
     }
 
     componentDidMount(): void {
-        if (!this.props.startingPosition) {
-            const [board, sideToMove, boardData, moves] = getStartingPosition()
+        const [board, sideToMove, boardData, moves] = getStartingPosition()
 
-            this.setState({
-                board: board,
-                draggingPieceIndex: null,
-                sideToMove: sideToMove,
-                legalMoves: moves,
-                boardData: boardData,
-                TESTING_moveReversal: false
-            })
-        }
-        else {
-            this.setState({
-                board: this.props.startingPosition,
-                draggingPieceIndex: null,
-                sideToMove: Pieces.white,
-                legalMoves: new Uint16Array(),
-                boardData: 0x000,
+        this.setState({
+            board: board,
+            draggingPieceIndex: null,
+            sideToMove: sideToMove,
+            legalMoves: moves,
+            boardData: boardData,
+            TESTING_moveReversal: false
+        })
 
-            })
-        }
     }
 
 
@@ -120,12 +105,6 @@ class Board extends React.Component<Props, State> {
         const legalMovesForPiece: Uint16Array = this.state.legalMoves.filter(move => (move & 0x3F) == from)
 
         return legalMovesForPiece.map(move => move >> 6)
-    }
-
-    TESTING_button() {
-        this.setState({
-            TESTING_moveReversal: !this.state.TESTING_moveReversal
-        })
     }
 
     render() {
@@ -198,7 +177,6 @@ class Board extends React.Component<Props, State> {
         return (
             <div className="board" ref={this.boardRef}>
                 <h1 className="temp">{this.state.sideToMove == 16 ? "white" : "black"} to move</h1>
-                <button className="move-reversing" onClick={this.TESTING_button}>Reversing Moves</button>
                 <div className="squares" draggable="false">
                     {squares}
                 </div>
