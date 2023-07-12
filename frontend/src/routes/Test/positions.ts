@@ -160,28 +160,3 @@ const testPositions: Array<TestPosition> = [
 ]
 
 export default testPositions
-
-function mirrorBoard(board: Uint8Array) {
-    const switchedColours = board.map((piece) => {
-        const colourMask = 0b11000
-        const pieceMask = 0b00111
-
-        const newColour = (piece & colourMask) == Pieces.white ? Pieces.black : Pieces.white
-        const pieceType = (piece & pieceMask)
-        return (pieceType !== Pieces.empty) ? newColour | pieceType : Pieces.empty
-    })
-
-    let mirroredBoard = []
-
-    for (let i = 0; i < 8; i++) {
-        let row = []
-        for (let j = 0; j < 8; j++) {
-            row.push(switchedColours[(7 - i) * 8 + j])
-        }
-        for (let k = 0; k < 8; k++) {
-            mirroredBoard.push(row[k])
-        }
-    }
-
-    return mirroredBoard
-}
