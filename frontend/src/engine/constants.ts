@@ -32,25 +32,3 @@ export const StartingBoard = new Uint8Array([
     Pieces.black | Pieces.knight,
     Pieces.black | Pieces.rook,
 ])
-
-export const _StartingBoard = new Uint8Array([
-    Pieces.white | Pieces.rook,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.white | Pieces.king,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.white | Pieces.rook,
-    ...(new Array(8).fill(Pieces.white | Pieces.pawn)),
-    ...(new Array(32).fill(Pieces.empty)),
-    ...(new Array(8).fill(Pieces.black | Pieces.pawn)),
-    Pieces.black | Pieces.rook,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.black | Pieces.king,
-    Pieces.empty,
-    Pieces.empty,
-    Pieces.black | Pieces.rook,
-])
