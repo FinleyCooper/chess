@@ -327,22 +327,49 @@ class Board {
             }
         }
 
+        // All pieces that lie in the attack bitboard of the king in all offsets
+        const piece = new Piece.Queen(Pieces.white)
+
+        const kingBitboard = this.collections[Pieces.king][this.sideToMoveIndex]
+
+        let kingPosition = 0n
+        while (kingBitboard.bitboard >> kingPosition !== 1n) {
+            kingPosition++
+        }
+
+        const attacks = piece.getAttacks(Number(kingPosition), this.collections[Pieces.all][1 - this.sideToMoveIndex].bitboard)
+        const isPinning = attacks & this.collections[Pieces.bishop][1 - this.sideToMoveIndex].bitboard
+            | this.collections[Pieces.rook][1 - this.sideToMoveIndex].bitboard
+            | this.collections[Pieces.queen][1 - this.sideToMoveIndex].bitboard
+
+
+        // We only need to check moves of pinned pieces and king moves and en passant
         const sideToPlay = this.sideToMove
+        const opponentColour = sideToPlay === Pieces.white ? Pieces.black : Pieces.white
+
+        const isCheck = this.isSquareAttacked(Number(kingPosition), opponentColour)
 
         moveList = moveList.filter(move => {
-            this.playMove(move)
+            const sourceSquare = move.getSourceSquare()
 
-            let isLegal = true
-
-            if (this.isCheck(sideToPlay)) {
-                isLegal = false
+            if (this.square[sourceSquare].getType() === Pieces.king) {
+                this.collections[Pieces.all][this.sideToMoveIndex].remove(sourceSquare)
+                const isLegal = !this.isSquareAttacked(move.getDestinationSquare(), opponentColour)
+                this.collections[Pieces.all][this.sideToMoveIndex].add(sourceSquare)
+                return isLegal
             }
 
-            this.unplayMove(move)
+            const isPsuedoPinned = isPinning && ((attacks >> BigInt(sourceSquare)) & 1n)
+            if (isCheck || isPsuedoPinned || move.isEnPassant()) {
+                this.playMove(move)
+                const isLegal = !this.isSquareAttacked(Number(kingPosition), opponentColour)
+                this.unplayMove(move)
 
-
-
-            return isLegal
+                return isLegal
+            }
+            else {
+                return true
+            }
         })
 
         return moveList
@@ -359,7 +386,6 @@ class Board {
         }
 
         return this.isSquareAttacked(Number(kingPosition), opponentColour)
-
     }
 
     getBoardData() {
