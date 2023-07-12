@@ -176,7 +176,6 @@ class Board extends React.Component<Props, State> {
 
         return (
             <div className="board" ref={this.boardRef}>
-                <h1 className="temp">{this.state.sideToMove == 16 ? "white" : "black"} to move</h1>
                 <div className="squares" draggable="false">
                     {squares}
                 </div>
