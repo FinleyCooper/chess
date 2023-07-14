@@ -1,6 +1,6 @@
 import React from "react"
 import Piece from "./Piece"
-import { getStartingPosition, tryToPlayMove } from "../../../engine"
+import { calculateBestMove, getStartingPosition, tryToPlayMove } from "../../../engine"
 import { Pieces, squareLength, initialColours } from "./constants"
 
 import "./index.css"
@@ -13,7 +13,6 @@ interface State {
     board: Uint8Array;  // Binary representation of the board
     sideToMove: number; // Side to move: 16 for White and 8 for Black
     boardData: number;  // Data needed for the state of the boar: not required to be read/written to by the GUI.
-    TESTING_moveReversal: boolean;
 }
 
 interface Props {
@@ -35,7 +34,6 @@ class Board extends React.Component<Props, State> {
             sideToMove: -1,
             legalMoves: new Uint16Array(),
             boardData: -1,
-            TESTING_moveReversal: false
         }
     }
 
@@ -48,14 +46,28 @@ class Board extends React.Component<Props, State> {
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
-            TESTING_moveReversal: false
         })
+
+        // setTimeout(() => this.opponentPlayMove(), 0)
 
     }
 
 
     attemptMove(from: number, to: number) {
-        const [newBoard, sideToMove, boardData, moves] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData, this.state.TESTING_moveReversal)
+        const [newBoard, sideToMove, boardData, moves] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
+
+        this.setState({
+            board: newBoard,
+            sideToMove: sideToMove,
+            legalMoves: moves,
+            boardData: boardData
+        })
+
+        setTimeout(() => this.opponentPlayMove(), 0)
+    }
+
+    opponentPlayMove() {
+        const [newBoard, sideToMove, boardData, moves] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
 
         this.setState({
             board: newBoard,
@@ -91,7 +103,7 @@ class Board extends React.Component<Props, State> {
         const newIndex: number = (Math.round(7 - draggingPieceY)) * 8 + Math.round(draggingPieceX)
 
         const avaliableSquares = this.getAvaliableMovesFrom(this.state.draggingPieceIndex!)
-        console.log(avaliableSquares)
+
         if (avaliableSquares.includes(newIndex)) {
             this.attemptMove(this.state.draggingPieceIndex!, newIndex)
         }

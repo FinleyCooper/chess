@@ -1,4 +1,6 @@
 import Board from './Board'
+import Move from './Move'
+import Search from './Search'
 import { StartingBoard, Pieces } from './constants'
 
 
@@ -9,7 +11,7 @@ export function getStartingPosition(): Array<any> {
     return [board.toBinary(), Pieces.white, 0x000, moveList]
 }
 
-export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array, sideToMove: number, boardData: number, TESTING_REVERSEMOVES: boolean): Array<any> {
+export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
     const gameState = (boardData << 1) | +!(sideToMove === Pieces.white)
 
     let board = new Board(binaryBoard, gameState)
@@ -29,3 +31,29 @@ export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array,
 
     return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList]
 }
+
+export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
+    const gameState = (boardData << 1) | +!(sideToMove === Pieces.white)
+
+    let board = new Board(binaryBoard, gameState)
+
+    let bestMove: Move = Search(board, 3)
+
+    board.playMove(bestMove)
+
+    const moves2 = board.generateLegalMoves()
+
+    if (moves2.length === 0) {
+        if (board.isCheck()) {
+            console.log('Checkmate')
+        }
+        else {
+            console.log('Stalemate')
+        }
+    }
+
+    const moveList = board.generateBinaryUCILegalMoves()
+
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList]
+
+} 

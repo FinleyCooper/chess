@@ -22,7 +22,7 @@ interface State {
     ellapsedTime: number;
 }
 
-const depthBelowMax = 0
+const depthBelowMax = 2
 
 class TestingPage extends React.Component<Props, State> {
     constructor(props: Props) {
