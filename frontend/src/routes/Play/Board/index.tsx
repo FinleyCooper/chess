@@ -20,6 +20,9 @@ interface Props {
     mouseY: number;
 }
 
+const doesHumanStart = Math.random() > 0.5
+
+
 class Board extends React.Component<Props, State> {
     boardRef: React.RefObject<HTMLDivElement>
 
@@ -38,18 +41,14 @@ class Board extends React.Component<Props, State> {
     }
 
     componentDidMount(): void {
-        const [board, sideToMove, boardData, moves] = getStartingPosition()
+        const [board, sideToMove, boardData, moves] = getStartingPosition(doesHumanStart)
 
         this.setState({
             board: board,
-            draggingPieceIndex: null,
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
         })
-
-        // setTimeout(() => this.opponentPlayMove(), 0)
-
     }
 
 
@@ -100,12 +99,15 @@ class Board extends React.Component<Props, State> {
 
     handleMouseUp = () => {
         const { draggingPieceX, draggingPieceY } = this.getDraggingPieceOffsets(this.props.mouseX, this.props.mouseY, this.state.draggingPieceIndex!)
-        const newIndex: number = (Math.round(7 - draggingPieceY)) * 8 + Math.round(draggingPieceX)
+
+        const newIndex: number = (Math.round(draggingPieceY)) * 8 + 7 - Math.round(draggingPieceX)
+
+        const translatedNewIndex = doesHumanStart ? (63 - newIndex) : newIndex
 
         const avaliableSquares = this.getAvaliableMovesFrom(this.state.draggingPieceIndex!)
 
-        if (avaliableSquares.includes(newIndex)) {
-            this.attemptMove(this.state.draggingPieceIndex!, newIndex)
+        if (avaliableSquares.includes(translatedNewIndex)) {
+            this.attemptMove(this.state.draggingPieceIndex!, translatedNewIndex)
         }
         else {
         }
@@ -140,27 +142,50 @@ class Board extends React.Component<Props, State> {
             const column: number = i % 8
 
             let colour: string = (row + column) % 2 === 0 ? initialColours.darkSquares : initialColours.lightSquares
+            const translatedIndex = doesHumanStart ? i : (row * 8 + 7 - column)
 
-            if (i == draggingPieceIndex) {
+            if (translatedIndex == draggingPieceIndex) {
                 colour = initialColours.activeSquare
             }
-            else if (avaliableSquares.includes(i)) {
+            else if (avaliableSquares.includes(translatedIndex)) {
                 colour = initialColours.allowedMove
+            }
+
+            function pieceTranslation(isDragging: boolean, dragX: number, dragY: number, col: number, row: number) {
+                if (isDragging) {
+                    if (doesHumanStart) {
+                        return `translate(${(dragX) * 100}%, ${(dragY) * 100 - 700}%)`
+                    }
+                    else {
+                        return `translate(${(dragX) * 100}%, ${(dragY) * 100}%)`
+                    }
+                }
+                if (doesHumanStart) {
+                    return `translate(${col * 100}%, ${-row * 100}%)`
+                }
+                else {
+                    return `translate(${700 - col * 100}%, ${row * 100}%)`
+                }
             }
 
 
             const pieceStyles: React.CSSProperties = {
                 zIndex: i === draggingPieceIndex ? 10 : 5,
-                transform: i === draggingPieceIndex ? `translate(${(draggingPieceX) * 100}%, ${(draggingPieceY) * 100 - 700}%)` : `translate(${column * 100}%, ${-row * 100}%)`,
+                transform: pieceTranslation(i == draggingPieceIndex, draggingPieceX, draggingPieceY, column, row),
                 width: squareLength,
                 height: squareLength,
             }
+
+            pieceStyles[doesHumanStart ? "bottom" : "top"] = 0
 
             const squareStyles: React.CSSProperties = {
                 backgroundColor: colour,
                 width: squareLength,
                 height: squareLength,
-                gridRowStart: 8 - row,
+            }
+
+            if (doesHumanStart) {
+                squareStyles.gridRowStart = 8 - row
             }
 
             squares.push(

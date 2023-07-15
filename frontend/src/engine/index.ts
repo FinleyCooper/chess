@@ -4,11 +4,15 @@ import Search from './Search'
 import { StartingBoard, Pieces } from './constants'
 
 
-export function getStartingPosition(): Array<any> {
-    const board = new Board(StartingBoard, 0x000)
-    const moveList = board.generateBinaryUCILegalMoves()
-
-    return [board.toBinary(), Pieces.white, 0x000, moveList]
+export function getStartingPosition(humanFirst: boolean): Array<any> {
+    if (humanFirst) {
+        const board = new Board(StartingBoard, 0x000)
+        const moveList = board.generateBinaryUCILegalMoves()
+        return [board.toBinary(), Pieces.white, 0x000, moveList]
+    }
+    else {
+        return calculateBestMove(StartingBoard, Pieces.white, 0x000)
+    }
 }
 
 export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
