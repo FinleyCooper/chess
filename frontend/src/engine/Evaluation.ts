@@ -55,11 +55,11 @@ export default (board: Board) => {
 
         if (board.square[i].isColour(Pieces.white)) {
             whiteMaterial += pieceValue[pieceType]
-            whitePieceSquareBonus += WhitePieceSquareTables[pieceSquareTableIndex][i]
+            whitePieceSquareBonus += WhitePieceSquareTables[pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1) // Material is more important in the endgame
         }
         else if ((board.square[i].isColour(Pieces.black))) {
             blackMaterial += pieceValue[pieceType]
-            blackPieceSquareBonus += BlackPieceSquareTables[pieceSquareTableIndex][i]
+            blackPieceSquareBonus += BlackPieceSquareTables[pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1)
         }
     }
 
