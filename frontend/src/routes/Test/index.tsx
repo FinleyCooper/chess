@@ -5,12 +5,14 @@ import testPositions from "./positions"
 
 import "./index.css"
 
+
+// Defining the perft function asynchrously, as if we convert to WASM later, functions called from WASM must be synchronus.
 const perft = (depth: number, board: Board): Promise<number> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             const nodes = syncPerft(depth, board)
             resolve(nodes)
-        }, 0)
+        }, 0) // Set timeout to 0 to put the function at the bottom of the execution stack so we can render before perfting 
     })
 }
 
@@ -31,7 +33,7 @@ class TestingPage extends React.Component<Props, State> {
         this.startPerfTests = this.startPerfTests.bind(this)
 
         const results: Array<Array<number>> = testPositions.map((v) => {
-            return new Array(v.expectedResults.length - depthBelowMax).fill(-1)
+            return new Array(v.expectedResults.length - depthBelowMax).fill(-1) // -1 is an empty value
         })
 
         this.state = {
