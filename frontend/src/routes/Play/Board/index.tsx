@@ -20,6 +20,23 @@ interface Props {
     mouseY: number;
 }
 
+function pieceTranslation(isDragging: boolean, dragX: number, dragY: number, col: number, row: number) {
+    if (isDragging) {
+        if (doesHumanStart) {
+            return `translate(${(dragX) * 100}%, ${(dragY) * 100 - 700}%)`
+        }
+        else {
+            return `translate(${(dragX) * 100}%, ${(dragY) * 100}%)`
+        }
+    }
+    if (doesHumanStart) {
+        return `translate(${col * 100}%, ${-row * 100}%)`
+    }
+    else {
+        return `translate(${700 - col * 100}%, ${row * 100}%)`
+    }
+}
+
 const doesHumanStart = Math.random() > 0.5
 
 
@@ -141,7 +158,7 @@ class Board extends React.Component<Props, State> {
             const row: number = Math.floor(i / 8)
             const column: number = i % 8
 
-            let colour: string = (row + column) % 2 === 0 ? initialColours.darkSquares : initialColours.lightSquares
+            let colour: string = (row + column) % 2 === (doesHumanStart ? 0 : 1) ? initialColours.darkSquares : initialColours.lightSquares
             const translatedIndex = doesHumanStart ? i : (row * 8 + 7 - column)
 
             if (translatedIndex == draggingPieceIndex) {
@@ -149,23 +166,6 @@ class Board extends React.Component<Props, State> {
             }
             else if (avaliableSquares.includes(translatedIndex)) {
                 colour = initialColours.allowedMove
-            }
-
-            function pieceTranslation(isDragging: boolean, dragX: number, dragY: number, col: number, row: number) {
-                if (isDragging) {
-                    if (doesHumanStart) {
-                        return `translate(${(dragX) * 100}%, ${(dragY) * 100 - 700}%)`
-                    }
-                    else {
-                        return `translate(${(dragX) * 100}%, ${(dragY) * 100}%)`
-                    }
-                }
-                if (doesHumanStart) {
-                    return `translate(${col * 100}%, ${-row * 100}%)`
-                }
-                else {
-                    return `translate(${700 - col * 100}%, ${row * 100}%)`
-                }
             }
 
 
