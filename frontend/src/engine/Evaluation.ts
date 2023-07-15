@@ -20,9 +20,9 @@ for (let i = 0; i < Object.keys(PieceSquareTables).length; i++) {
 export const pieceValue: { [key: number]: number } = {
     0: 0,
     1: 100,
-    2: 300,
+    2: 500,
     3: 300,
-    4: 500,
+    4: 300,
     5: 900,
     6: 0,
 }
