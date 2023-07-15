@@ -37,7 +37,7 @@ function getEstimatedMoveGoodness(board: Board, move: Move) {
     const sourcePiece = board.square[move.getSourceSquare()]
 
     // Capture difference
-    estimatedMoveGoodness += pieceValue[destinationPiece.getType()] - pieceValue[sourcePiece.getType()]
+    estimatedMoveGoodness += Math.min(pieceValue[destinationPiece.getType()] - pieceValue[sourcePiece.getType()], 0)
 
     if (move.getFlag() & 0b1000) {
         estimatedMoveGoodness += pieceValue[move.getPromotionPiece()]
@@ -58,8 +58,6 @@ function simplifyPosition(board: Board, alpha: number, beta: number) {
     if (evaluation > alpha) {
         alpha = evaluation
     }
-
-    alpha = Math.max(alpha, evaluation)
 
     const captures = board.generateLegalMoves().filter(move => move.isCapture())
 
