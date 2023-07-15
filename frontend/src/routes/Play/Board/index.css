@@ -16,17 +16,3 @@
     left: 0;
     cursor: pointer;
 }
-
-.testing-number {
-    position: relative;
-    top: 0;
-    right: 0;
-    transform: translate(25%, -50%);
-    font-size: 50px;
-    font-family: sans-serif;
-    z-index: 10;
-    color: rgb(161, 170, 226);
-    pointer-events: none;
-    opacity: 0.65;
-    /* display: none; */
-}

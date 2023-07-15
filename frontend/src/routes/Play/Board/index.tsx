@@ -194,7 +194,6 @@ class Board extends React.Component<Props, State> {
                     className="square"
                     style={squareStyles}
                 >
-                    <p className='testing-number'>{i}</p>
                 </div>
             )
 
