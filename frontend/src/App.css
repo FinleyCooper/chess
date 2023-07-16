@@ -1,7 +1,15 @@
+@font-face {
+  font-family: "Varela Round";
+  font-weight: 400;
+  font-style: normal;
+  src: local("Verale Round"), url(./assets/VarelaRound-Regular.ttf) format("truetype");
+}
+
 #root {
   margin: 0 auto;
   height: 100%;
   width: 100%;
+  font-family: "Varela Round", sans-serif;
 }
 
 html,
