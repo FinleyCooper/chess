@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useState } from 'react'
-import { Route, Routes, useLocation, Navigate } from "react-router-dom";
+import { Suspense } from 'react'
+import { Route, Routes } from "react-router-dom";
 
 import routes from "./routes"
 
