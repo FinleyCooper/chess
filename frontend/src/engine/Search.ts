@@ -92,9 +92,9 @@ function search(board: Board, depth: number) {
 
         if (moves.length === 0) {
             if (board.isCheck()) {
-                return -Infinity
+                return -Infinity // Checkmate
             }
-            return 0
+            return 0 // Stalemate
         }
 
         const estimatedMoveOrder = sortMoves(board, moves)
@@ -109,6 +109,7 @@ function search(board: Board, depth: number) {
                 if (depth === maxDepth) {
                     bestMove = moves[estimatedMoveOrder[i]]
                 }
+                // Cut this branch. This branch is now a leaf
                 return beta
             }
 
@@ -125,40 +126,6 @@ function search(board: Board, depth: number) {
 
     searchDepth(board, maxDepth, -Infinity, Infinity)
     return bestMove
-}
-
-function searchDepth(board: Board, depth: number, alpha: number, beta: number) {
-    if (depth == 0) {
-        return simplifyPosition(board, alpha, beta)
-    }
-
-    const moves = board.generateLegalMoves()
-
-    if (moves.length === 0) {
-        if (board.isCheck()) {
-            return -Infinity
-        }
-        return 0
-    }
-
-    const estimatedMoveOrder = sortMoves(board, moves)
-
-
-    for (let i = 0; i < moves.length; i++) {
-        board.playMove(moves[estimatedMoveOrder[i]])
-        const evaluation = -searchDepth(board, depth - 1, -beta, -alpha)
-        board.unplayMove(moves[estimatedMoveOrder[i]])
-
-        if (evaluation >= beta) {
-            return beta
-        }
-
-        if (evaluation > alpha) {
-            alpha = evaluation
-        }
-    }
-
-    return alpha
 }
 
 export default search
