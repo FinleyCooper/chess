@@ -79,7 +79,7 @@ class Board extends React.Component<Props, State> {
             boardData: boardData
         })
 
-        setTimeout(() => this.opponentPlayMove(), 0)
+        setTimeout(() => this.opponentPlayMove(), 5)
     }
 
     opponentPlayMove() {
