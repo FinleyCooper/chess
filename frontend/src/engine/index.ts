@@ -41,7 +41,7 @@ export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, b
 
     let board = new Board(binaryBoard, gameState)
 
-    let bestMove: Move = Search(board, 4)
+    let bestMove: Move = Search(board, 3)
 
     board.playMove(bestMove)
 
