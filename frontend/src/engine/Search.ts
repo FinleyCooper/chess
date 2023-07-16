@@ -7,6 +7,7 @@ import { pieceValue } from "./Evaluation";
 
 function sortMoves(board: Board, moves: Array<Move>) {
     // Length of move array is usually around 30 per position so insertion sort is the choice for optimisation
+    // We sort the moveGoodnessArray and the newOrder at the same time so we can just return the indexes of the moves which should be looked at first
     const moveGoodnessArray = moves.map(move => getEstimatedMoveGoodness(board, move))
     const newOrder = Array(moves.length)
 
@@ -37,13 +38,13 @@ function getEstimatedMoveGoodness(board: Board, move: Move) {
     const sourcePiece = board.square[move.getSourceSquare()]
 
     // Capture difference
-    estimatedMoveGoodness += Math.min(pieceValue[destinationPiece.getType()] - pieceValue[sourcePiece.getType()], 0)
+    estimatedMoveGoodness += Math.max(pieceValue[destinationPiece.getType()] - pieceValue[sourcePiece.getType()], 0)
 
     if (move.getFlag() & 0b1000) {
         estimatedMoveGoodness += pieceValue[move.getPromotionPiece()]
     }
     if (move.isCapture()) {
-        estimatedMoveGoodness += 1000
+        estimatedMoveGoodness += 500
     }
 
     return estimatedMoveGoodness
@@ -80,7 +81,7 @@ function simplifyPosition(board: Board, alpha: number, beta: number) {
 }
 
 function search(board: Board, depth: number) {
-    let bestMove = new Move(0)
+    let bestMove = new Move(0) // Dummy move
     const maxDepth = depth
 
     function searchDepth(board: Board, depth: number, alpha: number, beta: number) {
@@ -109,7 +110,7 @@ function search(board: Board, depth: number) {
                 if (depth === maxDepth) {
                     bestMove = moves[estimatedMoveOrder[i]]
                 }
-                // Cut this branch. This branch is now a leaf
+                // Cut this branch. This branch is now a leaf. The move before was too good, so our opponent will never get to this postion.
                 return beta
             }
 
