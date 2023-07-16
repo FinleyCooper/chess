@@ -81,7 +81,7 @@ class Board {
         // Promotion
         else if (movedPiece.getType() == Pieces.pawn && Math.floor(to / 8) == 7) {
             if (this.square[to].getType() === Pieces.empty) {
-                move = Move.fromCharacteristics(to, from, false, false, false, 0, 0b011)
+                move = Move.fromCharacteristics(to, from, false, false, false, 0, 0b011) // ALways promote to a queen (for the user)
             }
             else {
                 move = Move.fromCharacteristics(to, from, true, false, false, 0, 0b011)
@@ -198,7 +198,7 @@ class Board {
                 this.castlingRights |= 0b0001 << shift
             }
             if (source - colourOffset === 0) {
-                // Remove KS castling rights
+                // Remove QS castling rights
                 this.castlingRights |= 0b0010 << shift
             }
         }
@@ -225,9 +225,8 @@ class Board {
 
         this.updateAllPieceCollection()
 
-        this.sideToMoveIndex = +!this.sideToMoveIndex
+        this.sideToMoveIndex = 1 - this.sideToMoveIndex
         this.sideToMove = this.sideToMoveIndex ? Pieces.black : Pieces.white
-
     }
 
     unplayMove(move: Move) {
