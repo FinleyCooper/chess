@@ -2,6 +2,8 @@ import { lazy } from "react";
 
 const Play = lazy(() => import("./Play"))
 const Test = lazy(() => import("./Test"))
+const Home = lazy(() => import("./Home"))
+
 
 interface Route {
     readonly name: string;
@@ -12,7 +14,7 @@ interface Route {
 let PlayRoute: Route = {
     name: "play",
     element: Play,
-    path: "/" // TODO: change to /play
+    path: "/play" // TODO: change to /play
 }
 
 let TestRoute: Route = {
@@ -21,6 +23,12 @@ let TestRoute: Route = {
     path: "/test"
 }
 
-const routes: Array<Route> = [PlayRoute, TestRoute]
+let HomeRoute: Route = {
+    name: "home",
+    element: Home,
+    path: "/"
+}
+
+const routes: Array<Route> = [PlayRoute, TestRoute, HomeRoute]
 
 export default routes

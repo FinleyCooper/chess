@@ -1,0 +1,61 @@
+.home-container {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.option-container {
+    width: 900px;
+    height: 515px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 175px;
+
+}
+
+.option {
+    position: relative;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 35px;
+    border-color: #b2a9b8;
+    padding: 30px;
+    padding-top: 23px;
+    color: #5a5a5a;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease-in;
+}
+
+.option:hover {
+    background-color: #eeeeee;
+
+}
+
+.option-icon {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 120px;
+    height: 120px;
+}
+
+.option-title {
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtext {
+    font-size: 18px;
+    position: absolute;
+    bottom: 25px;
+    left: 75px;
+}
+
+.page-title {
+    position: absolute;
+    font-size: 60px;
+    color: #252525
+}
