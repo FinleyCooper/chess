@@ -1,7 +1,6 @@
 import Board from "./Board";
 import Evaluation from "./Evaluation";
 import Move from "./Move";
-import { Pieces } from "./constants";
 import { pieceValue } from "./Evaluation";
 
 
@@ -83,6 +82,7 @@ function simplifyPosition(board: Board, alpha: number, beta: number) {
 function search(board: Board, depth: number) {
     let bestMove = new Move(0) // Dummy move
     const maxDepth = depth
+    const checkmateEval = -99999999999
 
     function searchDepth(board: Board, depth: number, alpha: number, beta: number) {
         if (depth == 0) {
@@ -93,7 +93,7 @@ function search(board: Board, depth: number) {
 
         if (moves.length === 0) {
             if (board.isCheck()) {
-                return -Infinity // Checkmate
+                return checkmateEval + depth // Checkmate
             }
             return 0 // Stalemate
         }
@@ -126,6 +126,11 @@ function search(board: Board, depth: number) {
     }
 
     searchDepth(board, maxDepth, -Infinity, Infinity)
+
+    if (bestMove.datum === 0) { // Check if it is still the dummy move
+        throw new Error("Move calculated was invalid!")
+    }
+
     return bestMove
 }
 
