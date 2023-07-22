@@ -79,7 +79,7 @@ class Board {
         }
 
         // Promotion
-        else if (movedPiece.getType() == Pieces.pawn && Math.floor(to / 8) == 7) {
+        else if (movedPiece.getType() == Pieces.pawn && Math.floor(to / 8) % 7 == 0) {
             if (this.square[to].getType() === Pieces.empty) {
                 move = Move.fromCharacteristics(to, from, false, false, false, 0, 0b011) // ALways promote to a queen (for the user)
             }
