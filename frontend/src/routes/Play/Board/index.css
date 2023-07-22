@@ -16,3 +16,11 @@
     left: 0;
     cursor: pointer;
 }
+
+.game-result-container {
+    width: 150px;
+    height: 50px;
+    position: absolute;
+    top: 30%;
+    right: -200px
+}

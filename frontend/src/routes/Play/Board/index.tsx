@@ -13,6 +13,7 @@ interface State {
     board: Uint8Array;  // Binary representation of the board
     sideToMove: number; // Side to move: 16 for White and 8 for Black
     boardData: number;  // Data needed for the state of the boar: not required to be read/written to by the GUI.
+    isCheck: boolean;
 }
 
 interface Props {
@@ -54,42 +55,46 @@ class Board extends React.Component<Props, State> {
             sideToMove: -1,
             legalMoves: new Uint16Array(),
             boardData: -1,
+            isCheck: false
         }
     }
 
     componentDidMount(): void {
-        const [board, sideToMove, boardData, moves] = getStartingPosition(doesHumanStart)
+        const [board, sideToMove, boardData, moves, isCheck] = getStartingPosition(doesHumanStart)
 
         this.setState({
             board: board,
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
+            isCheck: isCheck
         })
     }
 
 
     attemptMove(from: number, to: number) {
-        const [newBoard, sideToMove, boardData, moves] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
+        const [newBoard, sideToMove, boardData, moves, isCheck] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
 
         this.setState({
             board: newBoard,
             sideToMove: sideToMove,
             legalMoves: moves,
-            boardData: boardData
+            boardData: boardData,
+            isCheck: isCheck
         })
 
         setTimeout(() => this.opponentPlayMove(), 5)
     }
 
     opponentPlayMove() {
-        const [newBoard, sideToMove, boardData, moves] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
+        const [newBoard, sideToMove, boardData, moves, isCheck] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
 
         this.setState({
             board: newBoard,
             sideToMove: sideToMove,
             legalMoves: moves,
-            boardData: boardData
+            boardData: boardData,
+            isCheck: isCheck
         })
     }
 
@@ -210,12 +215,21 @@ class Board extends React.Component<Props, State> {
             }
         }
 
+        let gameResult = ""
+
+        if (this.state.legalMoves.length === 0) {
+            gameResult = this.state.isCheck ? "Checkmate" : "Draw"
+        }
+
         return (
             <div className="board" ref={this.boardRef}>
                 <div className="squares" draggable="false">
                     {squares}
                 </div>
                 {pieces}
+                <div className="game-result-container">
+                    <h1>{gameResult}</h1>
+                </div>
             </div>
         )
     }

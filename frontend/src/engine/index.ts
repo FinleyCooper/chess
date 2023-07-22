@@ -8,7 +8,7 @@ export function getStartingPosition(humanFirst: boolean): Array<any> {
     if (humanFirst) {
         const board = new Board(StartingBoard, 0x000)
         const moveList = board.generateBinaryUCILegalMoves()
-        return [board.toBinary(), Pieces.white, 0x000, moveList]
+        return [board.toBinary(), Pieces.white, 0x000, moveList, false]
     }
     else {
         return calculateBestMove(StartingBoard, Pieces.white, 0x000)
@@ -24,16 +24,7 @@ export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array,
 
     const moveList = board.generateBinaryUCILegalMoves()
 
-    if (moveList.length === 0) {
-        if (board.isCheck()) {
-            console.log('Checkmate')
-        }
-        else {
-            console.log('Stalemate')
-        }
-    }
-
-    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList]
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck()]
 }
 
 export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
@@ -45,19 +36,8 @@ export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, b
 
     board.playMove(bestMove)
 
-    const moves2 = board.generateLegalMoves()
-
-    if (moves2.length === 0) {
-        if (board.isCheck()) {
-            console.log('Checkmate')
-        }
-        else {
-            console.log('Stalemate')
-        }
-    }
-
     const moveList = board.generateBinaryUCILegalMoves()
 
-    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList]
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck()]
 
 } 
