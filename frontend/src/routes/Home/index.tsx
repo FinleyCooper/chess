@@ -28,10 +28,6 @@ class Home extends React.Component<Props, State> {
     }
 
     render() {
-        if (this.state.buttonClicked !== "") {
-
-        }
-
         return this.state.buttonClicked === "" ? (
             <div className="home-container">
                 <h1 className='page-title'>{"{ thochess }"}</h1>
@@ -49,7 +45,7 @@ class Home extends React.Component<Props, State> {
                             </div>
                         </div>
                     </div>
-                    <div className="option">
+                    <div onClick={(e) => this.redirect("/custom")} className="option">
                         <p className="option-title">Custom Game</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#customisation-symbol`} />

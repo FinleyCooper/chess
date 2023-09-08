@@ -3,7 +3,9 @@ import { lazy } from "react";
 const Play = lazy(() => import("./Play"))
 const Test = lazy(() => import("./Test"))
 const Home = lazy(() => import("./Home"))
-
+const Custom = lazy(() => import("./Custom"))
+const Login = lazy(() => import("./Authentication/Login"));
+const Signup = lazy(() => import("./Authentication/Signup"));
 
 interface Route {
     readonly name: string;
@@ -14,7 +16,7 @@ interface Route {
 let PlayRoute: Route = {
     name: "play",
     element: Play,
-    path: "/play" // TODO: change to /play
+    path: "/play"
 }
 
 let TestRoute: Route = {
@@ -29,6 +31,24 @@ let HomeRoute: Route = {
     path: "/"
 }
 
-const routes: Array<Route> = [PlayRoute, TestRoute, HomeRoute]
+let CustomRoute: Route = {
+    name: "custom",
+    element: Custom,
+    path: "/custom"
+}
+
+let LoginRoute: Route = {
+    name: "login",
+    element: Login,
+    path: "/login"
+}
+
+let signupRoute: Route = {
+    name: "signup",
+    element: Signup,
+    path: "/signup"
+}
+
+const routes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute, LoginRoute, signupRoute]
 
 export default routes

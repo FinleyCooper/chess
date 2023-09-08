@@ -1,0 +1,51 @@
+.customisation-container {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.customisation-option-container {
+    width: 900px;
+    height: 515px;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 175px;
+    place-items: center stretch;
+
+}
+
+.customisation-option {
+    position: relative;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 35px;
+    border-color: #b2a9b8;
+    padding: 30px;
+    padding-top: 23px;
+    color: #5a5a5a;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease-in;
+    height: 113px;
+}
+
+.customisation-option:hover {
+    background-color: #eeeeee;
+
+}
+
+.customisation-option-icon {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 100px;
+    height: 100px;
+}
+
+.customisation-option-title {
+    margin: 0;
+    font-size: 28px;
+}
