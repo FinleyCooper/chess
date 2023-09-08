@@ -5,6 +5,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: nea-backend
+    volumes:
+      - type: volume
+        source: sqlite-db
+        target: /backend/database/data
   frontend:
     build:
       context: ./frontend
@@ -12,3 +16,6 @@ services:
     image: nea-frontend
     ports:
       - 8000:80
+
+volumes:
+  sqlite-db:
