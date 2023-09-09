@@ -142,7 +142,7 @@ class EllipticCurve:
         # Concatinate the binary strings of r and s with bitlength bitlength_n and return this as the signature (as we know that r and s have been calculated modulo n)
         return r ^ (s << self.n_bitlength)
 
-    def verifySignature(self, binary: bytes, signature: int, public_key_int: int) -> int:
+    def verifySignature(self, binary: bytes, signature: int, public_key_int: int) -> bool:
         # General steps from https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
         # Section 6.4.2 ECDSA Signature Verification Algorithm
         public_key = (public_key_int >> self.n_bitlength, public_key_int & ((2**self.n_bitlength - 1)))

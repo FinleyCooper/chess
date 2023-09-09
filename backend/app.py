@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
-import re
+from functools import wraps
 import sqlite3
+import re
 
 import crypto_auth
 import database
@@ -12,6 +13,62 @@ app.config.from_object("config.DevConfig")
 connection = sqlite3.connect(constants.database_path)
 
 db = database.Database(connection)
+
+
+# Authorisation decorator
+def authorisation_required(level):
+    def decorator(func):
+        @wraps(func)
+        def wrapped_function(*args, **kwargs):
+            token = request.cookies.get("token")
+            decoded_token = crypto_auth.verify(token=token, public_key=app.config["PUBLIC_KEY"])
+
+            # Handles invalid signatures and expired tokens
+            if decoded_token["failure"]:
+                return jsonify({"error": True, "message": decoded_token["failure"]}), 401
+
+            requested_user_id = kwargs.get("user_id")
+
+            print(decoded_token)
+
+            # User specific authorisation
+            if requested_user_id is not None:
+                # Only admins can access information not relating to them
+                if decoded_token["authorisation_level"] >= constants.AuthorisationLevel.admin:
+                    return func(*args, **kwargs)
+                elif decoded_token["id"] == requested_user_id and level <= decoded_token["authorisation_level"]:
+                    return func(*args, **kwargs)
+                else:
+                    return jsonify({"error": True, "message": "Forbidden"}), 403
+
+            # Non-user specific authorisation
+            if decoded_token["authorisation_level"] >= level:
+                return func(*args, **kwargs)
+
+            return jsonify({"error": True, "message": "Forbidden"}), 403
+
+        return wrapped_function
+
+    return decorator
+
+
+@app.route("/api/users/all", methods=["GET"])
+@authorisation_required(level=constants.AuthorisationLevel.admin)
+def get_all_users():
+    users = db.get_all_users()
+
+    return jsonify({"error": False, "data": [user.to_dict() for user in users]}), 200
+
+
+@app.route("/api/users/<user_id>", methods=["GET"])
+@authorisation_required(level=constants.AuthorisationLevel.default)
+def get_user(user_id: str = None):
+    user = db.get_user(_id=user_id)
+
+    if user is None:
+        return jsonify({"error": True, "message": "User does not exist"}), 404
+
+    return jsonify({"error": False, "data": user.to_dict()}), 200
 
 
 @app.route("/api/signup", methods=["POST"])
@@ -79,6 +136,10 @@ def login():
 
     response.set_cookie(
         "token", value=token, max_age=dur, secure=True, httponly=True, samesite="Strict", domain=app.config["DOMAIN"]
+    )
+
+    response.set_cookie(
+        "isLoggedIn", "true", max_age=dur, httponly=True, samesite="Strict", domain=app.config["DOMAIN"]
     )
 
     return response, 200

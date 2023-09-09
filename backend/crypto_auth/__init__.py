@@ -35,6 +35,8 @@ def create_token(msg: dict, duration: int = 86400, private_key: int = 0) -> str:
 
 
 def verify(token: str, public_key: int) -> dict:
+    if not token:
+        return {"failure": "Token not provided"}
     # base64 json to dictionary
     msg = json.loads(base64.b64decode(token).decode())
 
