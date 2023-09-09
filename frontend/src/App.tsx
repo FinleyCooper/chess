@@ -1,14 +1,13 @@
 import { Suspense } from 'react'
 import { Route, Routes } from "react-router-dom";
 
-import routes from "./routes"
+import { routes, loggedInRoutes } from "./routes"
+import LoggedInRoute from './routes/LoggedInRoute';
 
 import './App.css'
 
 
 function App() {
-
-
   return (
     <div className="App">
       <Suspense>
@@ -19,6 +18,11 @@ function App() {
               path={route.path}
               element={<route.element />}
             />
+          ))}
+          {loggedInRoutes.map((route, index) => (
+            <Route key={`path-${route.path}-${index}`} path={route.path} element={<LoggedInRoute />}>
+              <Route path={route.path} element={<route.element />} />
+            </Route>
           ))}
         </Routes>
       </Suspense>

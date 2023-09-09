@@ -43,12 +43,13 @@ let LoginRoute: Route = {
     path: "/login"
 }
 
-let signupRoute: Route = {
+let SignupRoute: Route = {
     name: "signup",
     element: Signup,
     path: "/signup"
 }
 
-const routes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute, LoginRoute, signupRoute]
 
-export default routes
+
+export const routes: Array<Route> = [LoginRoute, SignupRoute]
+export const loggedInRoutes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute]

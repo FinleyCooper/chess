@@ -139,7 +139,7 @@ def login():
     )
 
     response.set_cookie(
-        "isLoggedIn", "true", max_age=dur, httponly=True, samesite="Strict", domain=app.config["DOMAIN"]
+        "isLoggedIn", "true", max_age=dur, httponly=False, samesite="Strict", domain=app.config["DOMAIN"]
     )
 
     return response, 200

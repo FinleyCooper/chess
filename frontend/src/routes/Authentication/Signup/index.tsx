@@ -1,12 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 import TextInput from "./../TextInput"
 
 import "../index.css"
+
 // Code in this file is borrowed from a previous project that I made
 // All code is my own implementation however, unless commented otherwise
-
 interface Props { }
 interface State {
     email: string,
@@ -162,13 +162,7 @@ class Signup extends React.Component<Props, State> {
     render() {
         if (this.state.summited) {
             return (
-                <div className="form-page">
-                    <div className="form-container">
-                        <div className="form">
-                            <h1 className="form-title">Thank you for signing up</h1>
-                        </div>
-                    </div>
-                </div>
+                <Navigate to={"/login"} />
             );
         };
 

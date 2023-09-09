@@ -14,7 +14,7 @@ interface State {
     redirect: boolean
 }
 
-export default class SignUp extends React.Component<Props, State> {
+class Login extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -107,3 +107,5 @@ export default class SignUp extends React.Component<Props, State> {
         )
     }
 }
+
+export default Login
