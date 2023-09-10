@@ -4,8 +4,8 @@ import Search from './Search'
 import { StartingBoard, Pieces } from './constants'
 
 
-export function getStartingPosition(humanFirst: boolean): Array<any> {
-    if (humanFirst) {
+export function getStartingPosition(humanPlaysAs: number = Pieces.white): Array<any> {
+    if (humanPlaysAs === Pieces.white) {
         const board = new Board(StartingBoard, 0x000)
         const moveList = board.generateBinaryUCILegalMoves()
         return [board.toBinary(), Pieces.white, 0x000, moveList, false]

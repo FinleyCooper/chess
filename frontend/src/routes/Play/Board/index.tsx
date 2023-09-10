@@ -19,26 +19,25 @@ interface State {
 interface Props {
     mouseX: number;
     mouseY: number;
+    humanPlaysAs: number;
 }
 
-function pieceTranslation(isDragging: boolean, dragX: number, dragY: number, col: number, row: number) {
+function pieceTranslation(isDragging: boolean, humanPlaysAs: number, dragX: number, dragY: number, col: number, row: number) {
     if (isDragging) {
-        if (doesHumanStart) {
+        if (humanPlaysAs === Pieces.white) {
             return `translate(${(dragX) * 100}%, ${(dragY) * 100 - 700}%)`
         }
         else {
             return `translate(${(dragX) * 100}%, ${(dragY) * 100}%)`
         }
     }
-    if (doesHumanStart) {
+    if (humanPlaysAs === Pieces.white) {
         return `translate(${col * 100}%, ${-row * 100}%)`
     }
     else {
         return `translate(${700 - col * 100}%, ${row * 100}%)`
     }
 }
-
-const doesHumanStart = Math.random() > 0.5
 
 
 class Board extends React.Component<Props, State> {
@@ -60,7 +59,7 @@ class Board extends React.Component<Props, State> {
     }
 
     componentDidMount(): void {
-        const [board, sideToMove, boardData, moves, isCheck] = getStartingPosition(doesHumanStart)
+        const [board, sideToMove, boardData, moves, isCheck] = getStartingPosition(this.props.humanPlaysAs)
 
         this.setState({
             board: board,
@@ -124,7 +123,7 @@ class Board extends React.Component<Props, State> {
 
         const newIndex: number = (Math.round(draggingPieceY)) * 8 + 7 - Math.round(draggingPieceX)
 
-        const translatedNewIndex = doesHumanStart ? (63 - newIndex) : newIndex
+        const translatedNewIndex = this.props.humanPlaysAs === Pieces.white ? (63 - newIndex) : newIndex
 
         const avaliableSquares = this.getAvaliableMovesFrom(this.state.draggingPieceIndex!)
 
@@ -163,8 +162,8 @@ class Board extends React.Component<Props, State> {
             const row: number = Math.floor(i / 8)
             const column: number = i % 8
 
-            let colour: string = (row + column) % 2 === (doesHumanStart ? 0 : 1) ? initialColours.darkSquares : initialColours.lightSquares
-            const translatedIndex = doesHumanStart ? i : (row * 8 + 7 - column)
+            let colour: string = (row + column) % 2 === (this.props.humanPlaysAs === Pieces.white ? 0 : 1) ? initialColours.darkSquares : initialColours.lightSquares
+            const translatedIndex = this.props.humanPlaysAs === Pieces.white ? i : (row * 8 + 7 - column)
 
             if (translatedIndex == draggingPieceIndex) {
                 colour = initialColours.activeSquare
@@ -176,12 +175,12 @@ class Board extends React.Component<Props, State> {
 
             const pieceStyles: React.CSSProperties = {
                 zIndex: i === draggingPieceIndex ? 10 : 5,
-                transform: pieceTranslation(i == draggingPieceIndex, draggingPieceX, draggingPieceY, column, row),
+                transform: pieceTranslation(i == draggingPieceIndex, this.props.humanPlaysAs, draggingPieceX, draggingPieceY, column, row),
                 width: squareLength,
                 height: squareLength,
             }
 
-            pieceStyles[doesHumanStart ? "bottom" : "top"] = 0
+            pieceStyles[this.props.humanPlaysAs === Pieces.white ? "bottom" : "top"] = 0
 
             const squareStyles: React.CSSProperties = {
                 backgroundColor: colour,
@@ -189,7 +188,7 @@ class Board extends React.Component<Props, State> {
                 height: squareLength,
             }
 
-            if (doesHumanStart) {
+            if (this.props.humanPlaysAs === Pieces.white) {
                 squareStyles.gridRowStart = 8 - row
             }
 
