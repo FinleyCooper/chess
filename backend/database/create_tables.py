@@ -3,7 +3,8 @@ import sqlite3
 # If using docker, this must be executed in the backend container
 connection = sqlite3.connect(r"C:\Users\finle\Coding\NEA\backend\database\data\data.db")
 
-connection.execute(
+
+connection.executescript(
     """
     CREATE TABLE IF NOT EXISTS Users (
         Userid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -21,27 +22,33 @@ connection.execute(
     );
 
     CREATE TABLE IF NOT EXISTS UserCampaign (
-        Campaignid INTERGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        Campaignid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        Userid INTEGER NOT NULL,
+        Levelid INTEGER NOT NULL,
         FOREIGN KEY (Userid) REFERENCES Users (Userid),
         FOREIGN KEY (Levelid) REFERENCES CampaignLevels (Levelid)
     );
 
     CREATE TABLE IF NOT EXISTS GameHistory (
         Gameid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        GamePGN TEXT NOT NULL,
-        PlayerWon BOOLEAN NOT NULL,
-        DatePlayed DATE NOT NULL,
-        CustomSettings TEXT,
+        MoveList TEXT NOT NULL,
+        GameResult TEXT NOT NULL,
+        DatePlayed TIMESTAMP NOT NULL,
+        CustomSettings TEXT NOT NULL,
+        Userid INTEGER NOT NULL,
+        Campaignid INTEGER,
+        Levelid INTEGER,
         FOREIGN KEY (Campaignid) REFERENCES UserCampaign (Campaignid),
         FOREIGN KEY (Userid) REFERENCES Users (Userid),
         FOREIGN KEY (Levelid) REFERENCES CampaignLevels (Levelid)
     );
 
-    CRETE TABLE IF NOT EXISTS Links (
+    CREATE TABLE IF NOT EXISTS Links (
         Linkid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         LinkURL TEXT NOT NULL,
-        CreatedAt DATE NOT NULL,
-        ExpiresAt DATE NOT NULL,
+        CreatedAt TIMESTAMP NOT NULL,
+        ExpiresAt TIMESTAMP NOT NULL,
+        Gameid INTEGER NOT NULL,
         FOREIGN KEY (Gameid) REFERENCES GameHistory (Gameid)
     );
 """

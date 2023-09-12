@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from functools import wraps
 import sqlite3
 import re
+import json
 
 import crypto_auth
 import database
@@ -29,21 +30,19 @@ def authorisation_required(level):
 
             requested_user_id = kwargs.get("user_id")
 
-            print(decoded_token)
-
             # User specific authorisation
-            if requested_user_id is not None:
+            if requested_user_id is not None and requested_user_id != "@me":
                 # Only admins can access information not relating to them
                 if decoded_token["authorisation_level"] >= constants.AuthorisationLevel.admin:
-                    return func(*args, **kwargs)
+                    return func(*args, **kwargs, decoded_token=decoded_token)
                 elif decoded_token["id"] == requested_user_id and level <= decoded_token["authorisation_level"]:
-                    return func(*args, **kwargs)
+                    return func(*args, **kwargs, decoded_token=decoded_token)
                 else:
                     return jsonify({"error": True, "message": "Forbidden"}), 403
 
             # Non-user specific authorisation
             if decoded_token["authorisation_level"] >= level:
-                return func(*args, **kwargs)
+                return func(*args, **kwargs, decoded_token=decoded_token)
 
             return jsonify({"error": True, "message": "Forbidden"}), 403
 
@@ -54,7 +53,7 @@ def authorisation_required(level):
 
 @app.route("/api/users/all", methods=["GET"])
 @authorisation_required(level=constants.AuthorisationLevel.admin)
-def get_all_users():
+def get_all_users(decoded_token: dict = {}):
     users = db.get_all_users()
 
     return jsonify({"error": False, "data": [user.to_dict() for user in users]}), 200
@@ -62,13 +61,50 @@ def get_all_users():
 
 @app.route("/api/users/<user_id>", methods=["GET"])
 @authorisation_required(level=constants.AuthorisationLevel.default)
-def get_user(user_id: str = None):
-    user = db.get_user(_id=user_id)
+def get_user(user_id: str = None, decoded_token: dict = {}):
+    if user_id == "@me":
+        user = db.get_user(_id=decoded_token["id"])
+    else:
+        user = db.get_user(_id=user_id)
 
     if user is None:
         return jsonify({"error": True, "message": "User does not exist"}), 404
 
     return jsonify({"error": False, "data": user.to_dict()}), 200
+
+
+@app.route("/api/users/<user_id>/games", methods=["POST"])
+@authorisation_required(level=constants.AuthorisationLevel.default)
+def archive_game(user_id: str = None, decoded_token: dict = {}):
+    content = request.json
+
+    if not content:
+        return jsonify({"error": True, "message": "No data was provided in the request"}), 400
+
+    move_list = str(content.get("moveList"))
+    game_result = str(content.get("gameResult"))
+    custom_settings = content.get("customSettings")
+
+    if not move_list:
+        return jsonify({"error": True, "message": "Game not provided in the request"}), 400
+    if not game_result:
+        return jsonify({"error": True, "message": "Result not provided in the request"}), 400
+    if type(custom_settings) != dict or not custom_settings.get("humanPlaysAs"):
+        return jsonify({"error": True, "message": "Human player not provided in the request"}), 400
+
+    user = db.get_user(_id=user_id)
+
+    if user is None:
+        return jsonify({"error": True, "message": "User does not exist"}), 404
+
+    db.archive_game(
+        user_id,
+        move_list=move_list,
+        game_result=game_result,
+        custom_settings=json.dumps(custom_settings, sort_keys=True),
+    )
+
+    return jsonify({"error": False, "message": "Game successfully archived"}), 201
 
 
 @app.route("/api/signup", methods=["POST"])

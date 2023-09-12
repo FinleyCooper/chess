@@ -23,6 +23,19 @@ class Database:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
 
+    def archive_game(self, user_id, move_list: str = "", game_result: str = "", custom_settings: str = r"{}") -> None:
+        cursor = self.connection.cursor()
+
+        cursor.execute(
+            """
+                INSERT INTO GameHistory (MoveList, GameResult, DatePlayed, CustomSettings, Userid)
+                VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?)
+            """,
+            (move_list, game_result, custom_settings, user_id),
+        )
+
+        self.connection.commit()
+
     def get_user(self, email: str = "", _id: str = "") -> User | None:
         cursor = self.connection.cursor()
 

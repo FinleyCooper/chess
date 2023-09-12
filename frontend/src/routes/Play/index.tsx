@@ -27,13 +27,17 @@ class Play extends React.Component<Props, State> {
         })
     }
 
+    gameFinished(gameResult: string, moveList: string) {
+
+    }
+
 
     render() {
         return (
             // Add eventlistener for mousemove as movement should not be restricted to the board
             <div className="page-content" onMouseMove={this.handleMouseMove}>
                 <div className="board-container">
-                    <Board mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
+                    <Board onGameFinished={this.gameFinished} humanPlaysAs={16} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
                 </div>
             </div>
         )

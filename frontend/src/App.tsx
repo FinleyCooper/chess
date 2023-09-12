@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { routes, loggedInRoutes } from "./routes"
 import LoggedInRoute from './routes/LoggedInRoute';
+import LoggedInContextProvider from './LoggedInContextProvider';
 
 import './App.css'
 
@@ -21,7 +22,11 @@ function App() {
           ))}
           {loggedInRoutes.map((route, index) => (
             <Route key={`path-${route.path}-${index}`} path={route.path} element={<LoggedInRoute />}>
-              <Route path={route.path} element={<route.element />} />
+              <Route path={route.path} element={
+                <LoggedInContextProvider>
+                  <route.element />
+                </LoggedInContextProvider>
+              } />
             </Route>
           ))}
         </Routes>

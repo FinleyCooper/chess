@@ -8,11 +8,15 @@ export function getStartingPosition(humanPlaysAs: number = Pieces.white): Array<
     if (humanPlaysAs === Pieces.white) {
         const board = new Board(StartingBoard, 0x000)
         const moveList = board.generateBinaryUCILegalMoves()
-        return [board.toBinary(), Pieces.white, 0x000, moveList, false]
+        return [board.toBinary(), Pieces.white, 0x000, moveList, false, []]
     }
     else {
         return calculateBestMove(StartingBoard, Pieces.white, 0x000)
     }
+}
+
+function decimalToCordinate(square: number) {
+    return `${String.fromCharCode(97 + (square % 8))}${Math.floor(square / 8) + 1}`
 }
 
 export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
@@ -24,7 +28,7 @@ export function tryToPlayMove(from: number, to: number, binaryBoard: Uint8Array,
 
     const moveList = board.generateBinaryUCILegalMoves()
 
-    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck()]
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck(), `${decimalToCordinate(from)}${decimalToCordinate(to)}`]
 }
 
 export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, boardData: number): Array<any> {
@@ -38,6 +42,6 @@ export function calculateBestMove(binaryBoard: Uint8Array, sideToMove: number, b
 
     const moveList = board.generateBinaryUCILegalMoves()
 
-    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck()]
+    return [board.toBinary(), board.sideToMove, board.getBoardData(), moveList, board.isCheck(), `${decimalToCordinate(bestMove.getSourceSquare())}${decimalToCordinate(bestMove.getDestinationSquare())}`]
 
 } 

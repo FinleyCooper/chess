@@ -14,9 +14,14 @@ interface State {
     sideToMove: number; // Side to move: 16 for White and 8 for Black
     boardData: number;  // Data needed for the state of the boar: not required to be read/written to by the GUI.
     isCheck: boolean;
+    moveList: string[]; // List of moves
+    gameFinished: boolean;
 }
 
+type GameFinished = (gameResult: string, moveList: string) => void;
+
 interface Props {
+    onGameFinished: GameFinished;
     mouseX: number;
     mouseY: number;
     humanPlaysAs: number;
@@ -54,47 +59,60 @@ class Board extends React.Component<Props, State> {
             sideToMove: -1,
             legalMoves: new Uint16Array(),
             boardData: -1,
-            isCheck: false
+            isCheck: false,
+            moveList: [],
+            gameFinished: false
         }
     }
 
     componentDidMount(): void {
-        const [board, sideToMove, boardData, moves, isCheck] = getStartingPosition(this.props.humanPlaysAs)
+        const [board, sideToMove, boardData, moves, isCheck, move] = getStartingPosition(this.props.humanPlaysAs)
 
         this.setState({
             board: board,
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
-            isCheck: isCheck
+            isCheck: isCheck,
+            moveList: [move]
         })
     }
 
 
     attemptMove(from: number, to: number) {
-        const [newBoard, sideToMove, boardData, moves, isCheck] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
+        const [newBoard, sideToMove, boardData, moves, isCheck, move] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
 
-        this.setState({
+        if (moves.length === 0) {
+            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "))
+        }
+
+        this.setState(oldState => ({
             board: newBoard,
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
-            isCheck: isCheck
-        })
+            isCheck: isCheck,
+            moveList: [...oldState.moveList, move]
+        }))
 
         setTimeout(() => this.opponentPlayMove(), 5)
     }
 
     opponentPlayMove() {
-        const [newBoard, sideToMove, boardData, moves, isCheck] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
+        const [newBoard, sideToMove, boardData, moves, isCheck, move] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
 
-        this.setState({
+        if (moves.length === 0) {
+            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "))
+        }
+
+        this.setState(oldState => ({
             board: newBoard,
             sideToMove: sideToMove,
             legalMoves: moves,
             boardData: boardData,
-            isCheck: isCheck
-        })
+            isCheck: isCheck,
+            moveList: [...oldState.moveList, move]
+        }))
     }
 
 
@@ -214,21 +232,12 @@ class Board extends React.Component<Props, State> {
             }
         }
 
-        let gameResult = ""
-
-        if (this.state.legalMoves.length === 0) {
-            gameResult = this.state.isCheck ? "Checkmate" : "Draw"
-        }
-
         return (
             <div className="board" ref={this.boardRef}>
                 <div className="squares" draggable="false">
                     {squares}
                 </div>
                 {pieces}
-                <div className="game-result-container">
-                    <h1>{gameResult}</h1>
-                </div>
             </div>
         )
     }

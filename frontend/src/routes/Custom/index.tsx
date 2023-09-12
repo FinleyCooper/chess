@@ -2,6 +2,7 @@ import React from 'react'
 import pieceSVGs from "./../Play/Board/pieces.svg"
 import { Pieces } from '../Play/Board/constants'
 import Board from '../Play/Board'
+import { LoggedInContext } from '../../LoggedInContext'
 
 import "./index.css"
 
@@ -14,8 +15,13 @@ interface State {
 }
 
 class Custom extends React.Component<Props, State> {
+    static contextType = LoggedInContext
+    declare context: React.ContextType<typeof LoggedInContext>
+
     constructor(props: Props) {
         super(props)
+
+        this.gameFinished = this.gameFinished.bind(this)
 
         this.state = {
             playingAs: 0,
@@ -32,11 +38,27 @@ class Custom extends React.Component<Props, State> {
         })
     }
 
+    gameFinished(gameResult: string, moveList: string) {
+        fetch(`/api/users/${this.context.id}/games`, {
+            headers: {
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+                moveList: moveList,
+                gameResult: gameResult,
+                customSettings: {
+                    humanPlaysAs: this.state.playingAs
+                }
+            })
+        })
+    }
+
     render() {
         return this.state.submitted ? (
             <div className="page-content" onMouseMove={this.handleMouseMove}>
                 <div className="board-container">
-                    <Board humanPlaysAs={this.state.playingAs} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
+                    <Board onGameFinished={this.gameFinished} humanPlaysAs={this.state.playingAs} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
                 </div>
             </div>
         ) :
