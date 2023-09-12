@@ -18,10 +18,59 @@ class User:
         return dictionary
 
 
+class Game:
+    def __init__(
+        self,
+        _id: str,
+        move_list: str,
+        game_result: str,
+        date_played: str,
+        custom_settings: str,
+        user_id: str,
+        campaign_id: str | None = None,
+        level_id: str | None = None,
+    ):
+        self._id = _id
+        self.move_list = move_list
+        self.game_result = game_result
+        self.date_played = date_played
+        self.custom_settings = custom_settings
+        self.user_id = user_id
+        self.campaign_id = str(campaign_id) if campaign_id is not None else None
+        self.level_id = str(level_id) if level_id is not None else None
+
+    def to_dict(self):
+        return {
+            "id": self._id,
+            "move_list": self.move_list,
+            "game_result": self.game_result,
+            "date_played": self.date_played,
+            "custom_settings": self.custom_settings,
+            "user_id": self.user_id,
+            "campaign_id": self.campaign_id,
+            "level_id": self.level_id,
+        }
+
+
 # An interface between the Flask app and the sqlite3 database
 class Database:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
+
+    def get_archived_games(self, user_id=None):
+        cursor = self.connection.cursor()
+
+        if user_id is None:
+            cursor.execute("SELECT * FROM GameHistory ORDER BY DatePlayed DESC")
+        else:
+            cursor.execute("SELECT * FROM GameHistory WHERE Userid = ? ORDER BY DatePlayed DESC", (user_id,))
+
+        entries = cursor.fetchall()
+
+        return [
+            Game(str(row[0]), row[1], row[2], row[3], row[4], str(row[5]), campaign_id=row[6], level_id=row[7])
+            for row in entries
+        ]
 
     def archive_game(self, user_id, move_list: str = "", game_result: str = "", custom_settings: str = r"{}") -> None:
         cursor = self.connection.cursor()

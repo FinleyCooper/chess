@@ -73,6 +73,13 @@ def get_user(user_id: str = None, decoded_token: dict = {}):
     return jsonify({"error": False, "data": user.to_dict()}), 200
 
 
+@app.route("/api/users/<user_id>/games", methods=["GET"])
+def get_games_from_user(user_id: str = None, decoded_token: dict = {}):
+    games = db.get_archived_games(user_id=user_id)
+
+    return jsonify({"error": False, "data": [game.to_dict() for game in games]}), 200
+
+
 @app.route("/api/users/<user_id>/games", methods=["POST"])
 @authorisation_required(level=constants.AuthorisationLevel.default)
 def archive_game(user_id: str = None, decoded_token: dict = {}):
