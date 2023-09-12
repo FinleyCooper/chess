@@ -1,5 +1,6 @@
-class AuthorisationLevel:
-    default: int = 1
+class AuthLevel:
+    unauthenicatedUser: int = 1
+    default: int = 2
     admin: int = 5
 
 

@@ -1,0 +1,23 @@
+.history-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 50px;
+}
+
+
+.game {
+    width: 750px;
+    height: 100px;
+    background-color: #f3f3f3;
+    padding: 10px;
+    margin: 25px;
+    font-size: 18px;
+    display: flex;
+}
+
+.game>* {
+    flex-grow: 1;
+    flex-basis: 0;
+}

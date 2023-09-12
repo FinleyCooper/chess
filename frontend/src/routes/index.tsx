@@ -6,6 +6,7 @@ const Home = lazy(() => import("./Home"))
 const Custom = lazy(() => import("./Custom"))
 const Login = lazy(() => import("./Authentication/Login"));
 const Signup = lazy(() => import("./Authentication/Signup"));
+const History = lazy(() => import("./History"))
 
 interface Route {
     readonly name: string;
@@ -49,7 +50,13 @@ let SignupRoute: Route = {
     path: "/signup"
 }
 
+let HistoryRoute: Route = {
+    name: "history",
+    element: History,
+    path: "/history"
+}
+
 
 
 export const routes: Array<Route> = [LoginRoute, SignupRoute]
-export const loggedInRoutes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute]
+export const loggedInRoutes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute, HistoryRoute]

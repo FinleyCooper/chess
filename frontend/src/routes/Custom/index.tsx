@@ -38,7 +38,7 @@ class Custom extends React.Component<Props, State> {
         })
     }
 
-    gameFinished(gameResult: string, moveList: string) {
+    gameFinished(gameResult: string, moveList: string, winner: number) {
         fetch(`/api/users/${this.context.id}/games`, {
             headers: {
                 "content-type": "application/json"
@@ -47,9 +47,9 @@ class Custom extends React.Component<Props, State> {
             body: JSON.stringify({
                 moveList: moveList,
                 gameResult: gameResult,
-                customSettings: {
-                    humanPlaysAs: this.state.playingAs
-                }
+                customSettings: {},
+                humanPlaysAs: this.state.playingAs,
+                winner: winner,
             })
         })
     }

@@ -21,7 +21,7 @@ class Home extends React.Component<Props, State> {
         }
     }
 
-    redirect(path: string) {
+    redirect(path: string): void {
         this.setState({
             buttonClicked: path
         })
@@ -51,7 +51,7 @@ class Home extends React.Component<Props, State> {
                             <use href={`${pieceSVGs}#customisation-symbol`} />
                         </svg>
                     </div>
-                    <div className="option">
+                    <div onClick={(e) => this.redirect("/history")} className="option">
                         <p className="option-title">View Game History</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#analysis-symbol`} />

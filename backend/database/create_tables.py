@@ -35,6 +35,8 @@ connection.executescript(
         GameResult TEXT NOT NULL,
         DatePlayed TIMESTAMP NOT NULL,
         CustomSettings TEXT NOT NULL,
+        HumanPlaysAs INTEGER NOT NULL,
+        Winner INTEGER NOT NULL,
         Userid INTEGER NOT NULL,
         Campaignid INTEGER,
         Levelid INTEGER,

@@ -18,7 +18,7 @@ interface State {
     gameFinished: boolean;
 }
 
-type GameFinished = (gameResult: string, moveList: string) => void;
+type GameFinished = (gameResult: string, moveList: string, winner: number) => void;
 
 interface Props {
     onGameFinished: GameFinished;
@@ -83,7 +83,7 @@ class Board extends React.Component<Props, State> {
         const [newBoard, sideToMove, boardData, moves, isCheck, move] = tryToPlayMove(from, to, this.state.board, this.state.sideToMove, this.state.boardData)
 
         if (moves.length === 0) {
-            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "))
+            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "), this.state.sideToMove)
         }
 
         this.setState(oldState => ({
@@ -102,7 +102,7 @@ class Board extends React.Component<Props, State> {
         const [newBoard, sideToMove, boardData, moves, isCheck, move] = calculateBestMove(this.state.board, this.state.sideToMove, this.state.boardData)
 
         if (moves.length === 0) {
-            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "))
+            this.props.onGameFinished(isCheck ? "Checkmate" : "Draw", [...this.state.moveList, move].join(" "), this.state.sideToMove)
         }
 
         this.setState(oldState => ({
