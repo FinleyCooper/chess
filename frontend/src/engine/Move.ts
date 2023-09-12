@@ -9,7 +9,7 @@
 // Flag bits (from least significant to most significant) text in brackets is situations where the flag is 1 (toggled)
 // special 0 (holy hell, double pawn push, O-O-O, bishop or queen promotion/promotion capture)
 // special 1 (Castling, rook or queen promotion/promotion capture)
-// capture (all capture, including holy hell and promotion captures)
+// capture (all capture, including en passant and promotion captures)
 // promotation (promotions including promotion captures)
 // 1. e4 is 53824 or 110100 100100 0000
 export const Pieces = {
