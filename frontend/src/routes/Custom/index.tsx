@@ -1,8 +1,10 @@
 import React from 'react'
-import pieceSVGs from "./../Play/Board/pieces.svg"
-import { Pieces } from '../Play/Board/constants'
-import Board from '../Play/Board'
+import pieceSVGs from "../../components/BoardElement/pieces.svg"
+import BoardElement from '../../components/BoardElement'
+import { Pieces } from '../../components/BoardElement/constants'
 import { LoggedInContext } from '../../LoggedInContext'
+import Engine from "../../engine"
+import { Customisation } from '../../engine/Engine'
 
 import "./index.css"
 
@@ -10,25 +12,33 @@ interface Props { }
 interface State {
     playingAs: number
     submitted: boolean
-    mouseX: number;
-    mouseY: number;
+    mouseX: number
+    mouseY: number
+    customisation: Customisation
 }
 
 class Custom extends React.Component<Props, State> {
     static contextType = LoggedInContext
     declare context: React.ContextType<typeof LoggedInContext>
+    Engine: Engine | null
 
     constructor(props: Props) {
         super(props)
 
-        this.gameFinished = this.gameFinished.bind(this)
+        this.postGameResult = this.postGameResult.bind(this)
+        this.startGame = this.startGame.bind(this)
+        this.userMoves = this.userMoves.bind(this)
+        this.checkResult = this.checkResult.bind(this)
 
         this.state = {
             playingAs: 0,
             submitted: false,
             mouseX: 0,
             mouseY: 0,
+            customisation: {},
         }
+
+        this.Engine = null
     }
 
     handleMouseMove = (event: React.MouseEvent) => {
@@ -38,14 +48,14 @@ class Custom extends React.Component<Props, State> {
         })
     }
 
-    gameFinished(gameResult: string, moveList: string, winner: number) {
+    postGameResult(gameResult: string, winner: number) {
         fetch(`/api/users/${this.context.id}/games`, {
             headers: {
                 "content-type": "application/json"
             },
             method: "POST",
             body: JSON.stringify({
-                moveList: moveList,
+                moveList: this.Engine?.getMoveListString(),
                 gameResult: gameResult,
                 customSettings: {},
                 humanPlaysAs: this.state.playingAs,
@@ -54,11 +64,47 @@ class Custom extends React.Component<Props, State> {
         })
     }
 
+    startGame() {
+        this.setState({ submitted: true })
+
+        this.Engine = Engine.fromStartingPosition(3, {})
+
+        if (this.state.playingAs === Pieces.black) {
+            this.Engine.computerMove()
+        }
+    }
+
+    checkResult() {
+        if (this.Engine?.board.isCheckmate()) {
+            this.postGameResult("Checkmate", this.Engine.board.sideToMove === Pieces.white ? Pieces.black : Pieces.white)
+        }
+        if (this.Engine?.board.isStalemate()) {
+            this.postGameResult("Stalemate", 0)
+        }
+    }
+
+    userMoves(from: number, to: number) {
+        if (!this.Engine) {
+            return
+        }
+
+        this.Engine.playerUCIMove(from, to)
+        this.checkResult()
+
+        this.Engine.computerMove()
+        this.checkResult()
+    }
+
     render() {
-        return this.state.submitted ? (
+        return this.state.submitted && this.Engine ? (
             <div className="page-content" onMouseMove={this.handleMouseMove}>
                 <div className="board-container">
-                    <Board onGameFinished={this.gameFinished} humanPlaysAs={this.state.playingAs} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
+                    <BoardElement
+                        board={this.Engine.board}
+                        sideFacingForward={this.state.playingAs}
+                        onUserAttemptsMove={this.userMoves}
+                        mouseX={this.state.mouseX}
+                        mouseY={this.state.mouseY} />
                 </div>
             </div>
         ) :
@@ -78,7 +124,7 @@ class Custom extends React.Component<Props, State> {
                             </svg>
                         </div>
                     </div>
-                    <div className="submit-container" onClick={() => this.setState({ submitted: true })}>
+                    <div className="submit-container" onClick={this.startGame}>
                         <p>Play</p>
                     </div>
                 </div>

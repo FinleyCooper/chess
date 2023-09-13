@@ -1,5 +1,6 @@
 import sqlite3
 import datetime
+from typing import Tuple
 
 
 class User:
@@ -83,25 +84,33 @@ class Database:
 
         cursor.execute(
             """
-                       INSERT INTO Links
-                       (LinkURL, CreatedAt, ExpiresAt, Gameid)
-                       Values(?, CURRENT_TIMESTAMP, DATETIME('now', '+1 day'), ?)""",
+                INSERT INTO Links
+                (LinkURL, CreatedAt, ExpiresAt, Gameid)
+                Values(?, CURRENT_TIMESTAMP, DATETIME('now', '+1 day'), ?)""",
             (link_suffix, game_id),
         )
 
         self.connection.commit()
 
-    def get_link(self, link_suffix: str):
+    def get_link(self, link_suffix: str) -> None | Tuple[Link, str]:
         cursor = self.connection.cursor()
-        print(link_suffix)
-        cursor.execute("SELECT * FROM Links WHERE LinkURL = ?", (link_suffix,))
+
+        cursor.execute(
+            """
+                    SELECT Links.*, GameHistory.Userid
+                    FROM Links
+                    JOIN GameHistory ON Links.Gameid = GameHistory.Gameid
+                    WHERE Links.LinkURL = ?
+                """,
+            (link_suffix,),
+        )
 
         entry = cursor.fetchone()
 
         if entry is None:
             return None
 
-        return Link(str(entry[0]), entry[1], entry[2], entry[3], str(entry[4]))
+        return Link(str(entry[0]), entry[1], entry[2], entry[3], str(entry[4])), str(entry[5])
 
     def get_game(self, game_id: str):
         cursor = self.connection.cursor()

@@ -1,5 +1,5 @@
 import React from "react"
-import Board from "./Board"
+import BoardElement from "../../components/BoardElement";
 
 import "./index.css"
 
@@ -37,7 +37,7 @@ class Play extends React.Component<Props, State> {
             // Add eventlistener for mousemove as movement should not be restricted to the board
             <div className="page-content" onMouseMove={this.handleMouseMove}>
                 <div className="board-container">
-                    <Board onGameFinished={this.gameFinished} humanPlaysAs={16} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
+                    {/* <Board onGameFinished={this.gameFinished} humanPlaysAs={16} mouseX={this.state.mouseX} mouseY={this.state.mouseY} /> */}
                 </div>
             </div>
         )

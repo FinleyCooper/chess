@@ -1,14 +1,14 @@
-from flask import Flask, request, jsonify, redirect
-from functools import wraps
-import sqlite3
-import re
+import base64
 import json
 import random
-import base64
+import re
+import sqlite3
 
+import constants as const
 import crypto_auth
 import database
-import constants as const
+from decorators import authorisation_required
+from flask import Flask, jsonify, redirect, request
 
 app = Flask(__name__)
 app.config.from_object("config.DevConfig")
@@ -16,44 +16,6 @@ app.config.from_object("config.DevConfig")
 connection = sqlite3.connect(const.database_path)
 
 db = database.Database(connection)
-
-
-# Authorisation decorator
-def authorisation_required(level):
-    def decorator(func):
-        @wraps(func)
-        def wrapped_function(*args, **kwargs):
-            token = request.cookies.get("token")
-            decoded_token = crypto_auth.verify(token=token, public_key=app.config["PUBLIC_KEY"])
-
-            # Handles invalid signatures and expired tokens
-            if decoded_token["failure"]:
-                return jsonify({"error": True, "message": decoded_token["failure"]}), 401
-
-            requested_user_id = kwargs.get("user_id")
-
-            # User specific authorisation
-            if requested_user_id is not None and requested_user_id != "@me":
-                # Only admins can access information not relating to them or we are using a temp token
-                if (
-                    decoded_token["authorisation_level"] >= const.AuthLevel.admin
-                    or decoded_token["authorisation_level"] == const.AuthLevel.unauthenicatedUser
-                ):
-                    return func(*args, **kwargs, decoded_token=decoded_token)
-                elif decoded_token["id"] == requested_user_id and level <= decoded_token["authorisation_level"]:
-                    return func(*args, **kwargs, decoded_token=decoded_token)
-                else:
-                    return jsonify({"error": True, "message": "Forbidden"}), 403
-
-            # Non-user specific authorisation
-            if decoded_token["authorisation_level"] >= level:
-                return func(*args, **kwargs, decoded_token=decoded_token)
-
-            return jsonify({"error": True, "message": "Forbidden"}), 403
-
-        return wrapped_function
-
-    return decorator
 
 
 @app.route("/api/users/<user_id>/games/<game_id>/link", methods=["GET"])
@@ -74,7 +36,7 @@ def get_shareable_link(user_id: str = None, game_id: str = None, decoded_token: 
 
 @app.route("/s/<link_suffix>", methods=["GET"])
 def redirect_to_game(link_suffix: str = None):
-    link = db.get_link(link_suffix)
+    link, user_id = db.get_link(link_suffix)
 
     if link is None:
         return "Link does not exist", 404
@@ -83,16 +45,22 @@ def redirect_to_game(link_suffix: str = None):
 
     # Give them a short token with small scope
     dur = 86400  # One day
-    token = crypto_auth.create_token(
-        {"authorisation_level": const.AuthLevel.unauthenicatedUser, "id": "-1", "gameid": link.game_id},
+    temp_token = crypto_auth.create_token(
+        {"authorisation_level": const.AuthLevel.unauthenicatedUser, "id": user_id, "gameid": link.game_id},
         duration=dur,
         private_key=app.config["PRIVATE_KEY"],
     )
 
-    response = redirect(f"{app.config['ORIGIN']}/review?gameid={link.game_id}")
+    response = redirect(f"{app.config['ORIGIN']}/review?gameid={link.game_id}&userid={user_id}")
 
     response.set_cookie(
-        "token", value=token, max_age=dur, secure=True, httponly=True, samesite="Strict", domain=app.config["DOMAIN"]
+        "tempToken",
+        value=temp_token,
+        max_age=dur,
+        secure=True,
+        httponly=True,
+        samesite="Strict",
+        domain=app.config["DOMAIN"],
     )
 
     return response
@@ -123,18 +91,12 @@ def get_user(user_id: str = None, decoded_token: dict = {}):
 @app.route("/api/users/<user_id>/games/<game_id>", methods=["GET"])
 @authorisation_required(level=const.AuthLevel.unauthenicatedUser)
 def get_game_from_user(user_id: str = None, game_id: str = None, decoded_token: dict = {}):
-    if (
-        decoded_token["authorisation_level"] == const.AuthLevel.unauthenicatedUser
-        and decoded_token.get("gameid") != game_id
-    ):
-        return jsonify({"error": True, "message": "Forbidden"}), 403
-
     game = db.get_game(game_id)
 
     if game is None:
         return jsonify({"error": True, "message": "Game does not exist"}), 404
 
-    return jsonify({"error": False, "data": game.to_dict()}), 404
+    return jsonify({"error": False, "data": game.to_dict()}), 200
 
 
 @app.route("/api/users/<user_id>/games/all", methods=["GET"])

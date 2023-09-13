@@ -1,4 +1,4 @@
-import { Pieces } from "../Play/Board/constants"
+import { Pieces } from "../../engine/Move"
 
 interface TestPosition {
     name: string;

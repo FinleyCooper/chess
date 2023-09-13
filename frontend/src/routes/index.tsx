@@ -1,12 +1,13 @@
 import { lazy } from "react";
 
-const Play = lazy(() => import("./Play"))
+const Adventure = lazy(() => import("./Adventure"))
 const Test = lazy(() => import("./Test"))
 const Home = lazy(() => import("./Home"))
 const Custom = lazy(() => import("./Custom"))
 const Login = lazy(() => import("./Authentication/Login"));
 const Signup = lazy(() => import("./Authentication/Signup"));
 const History = lazy(() => import("./History"))
+const Review = lazy(() => import("./Review"))
 
 interface Route {
     readonly name: string;
@@ -14,10 +15,10 @@ interface Route {
     readonly path: string;
 }
 
-let PlayRoute: Route = {
-    name: "play",
-    element: Play,
-    path: "/play"
+let AdventureRoute: Route = {
+    name: "adventure",
+    element: Adventure,
+    path: "/adventure"
 }
 
 let TestRoute: Route = {
@@ -56,7 +57,13 @@ let HistoryRoute: Route = {
     path: "/history"
 }
 
+let ReviewRoute: Route = {
+    name: "review",
+    element: Review,
+    path: "/review"
+}
 
 
-export const routes: Array<Route> = [LoginRoute, SignupRoute]
-export const loggedInRoutes: Array<Route> = [PlayRoute, TestRoute, HomeRoute, CustomRoute, HistoryRoute]
+
+export const routes: Array<Route> = [LoginRoute, SignupRoute, ReviewRoute]
+export const loggedInRoutes: Array<Route> = [AdventureRoute, TestRoute, HomeRoute, CustomRoute, HistoryRoute]

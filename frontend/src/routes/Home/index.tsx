@@ -32,7 +32,7 @@ class Home extends React.Component<Props, State> {
             <div className="home-container">
                 <h1 className='page-title'>{"{ thochess }"}</h1>
                 <div className="option-container">
-                    <div onClick={(e) => this.redirect("/play")} className="option">
+                    <div onClick={(e) => this.redirect("/adventure")} className="option">
                         <p className="option-title">Continue Adventure</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#adventure-symbol`} />

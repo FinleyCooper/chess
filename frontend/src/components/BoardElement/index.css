@@ -1,0 +1,18 @@
+/* Chess board */
+
+.board {
+    position: relative;
+}
+
+.squares {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+
+.chess-piece {
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+}

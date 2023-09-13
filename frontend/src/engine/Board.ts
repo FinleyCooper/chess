@@ -387,6 +387,14 @@ class Board {
         return this.isSquareAttacked(Number(kingPosition), opponentColour)
     }
 
+    isCheckmate() {
+        return this.generateLegalMoves().length === 0 && this.isCheck()
+    }
+
+    isStalemate() {
+        return this.generateLegalMoves().length === 0 && !this.isCheck()
+    }
+
     getBoardData() {
         return this.getGameState() >> 1
     }
