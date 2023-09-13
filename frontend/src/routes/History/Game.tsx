@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "react-router-dom"
 
 import { LoggedInContext } from "../../LoggedInContext"
 
@@ -43,6 +44,7 @@ class History extends React.Component<Props, State> {
                 <p>{title}</p>
                 <p>Played as {this.props.humanPlaysAs === 16 ? "white" : "black"}</p>
                 <p>Moves: {Math.ceil(this.props.moveList.split(" ").length / 2)}</p>
+                <Link to={`/review?gameid=${this.props.id}&userid=${this.context.id}`}>Review</Link>
                 <p onClick={(e) => this.createLink(e, this.props.id)}>Share</p>
             </div>
         )
