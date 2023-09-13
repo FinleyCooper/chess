@@ -4,7 +4,8 @@ import BoardElement from '../../components/BoardElement'
 import { Pieces } from '../../components/BoardElement/constants'
 import { LoggedInContext } from '../../LoggedInContext'
 import Engine from "../../engine"
-import { Customisation } from '../../engine/Engine'
+import { Customisation, defaultCustomisation } from '../../engine/Engine'
+import CustomisationSlider from './CustomisationSlider'
 
 import "./index.css"
 
@@ -29,16 +30,18 @@ class Custom extends React.Component<Props, State> {
         this.startGame = this.startGame.bind(this)
         this.userMoves = this.userMoves.bind(this)
         this.checkResult = this.checkResult.bind(this)
+        this.handleSliderChange = this.handleSliderChange.bind(this)
 
         this.state = {
             playingAs: 0,
             submitted: false,
             mouseX: 0,
             mouseY: 0,
-            customisation: {},
+            customisation: defaultCustomisation,
         }
 
         this.Engine = null
+
     }
 
     handleMouseMove = (event: React.MouseEvent) => {
@@ -65,9 +68,12 @@ class Custom extends React.Component<Props, State> {
     }
 
     startGame() {
+        if (this.state.playingAs == 0) {
+            return
+        }
         this.setState({ submitted: true })
 
-        this.Engine = Engine.fromStartingPosition(3, {})
+        this.Engine = Engine.fromStartingPosition(3, defaultCustomisation)
 
         if (this.state.playingAs === Pieces.black) {
             this.Engine.computerMove()
@@ -93,6 +99,32 @@ class Custom extends React.Component<Props, State> {
 
         this.Engine.computerMove()
         this.checkResult()
+    }
+
+    handleSliderChange(e: React.ChangeEvent<HTMLInputElement>) {
+        let attribute: keyof Customisation
+
+        switch (e.target.name) {
+            case "Aggressiveness":
+                attribute = "aggressiveness"
+                break
+            case "Piece Exchanging Tendency":
+                attribute = "tradeHappy"
+                break
+            case "Engine Strength":
+                attribute = "strength"
+                break
+            default:
+                throw new Error("Slider name doesn't correspond to attribute")
+        }
+
+
+        let newCustomisation = this.state.customisation
+        newCustomisation[attribute] = Number(e.target.value)
+
+        this.setState({
+            customisation: newCustomisation
+        })
     }
 
     render() {
@@ -123,6 +155,11 @@ class Custom extends React.Component<Props, State> {
                                 <use href={`${pieceSVGs}#black-king`} />
                             </svg>
                         </div>
+                    </div>
+                    <div className="customisation-sliders-container">
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Engine Strength" min={0} max={100} default={defaultCustomisation.strength} />
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Aggressiveness" min={0} max={100} default={defaultCustomisation.aggressiveness} />
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Piece Exchanging Tendency" min={0} max={100} default={defaultCustomisation.tradeHappy} />
                     </div>
                     <div className="submit-container" onClick={this.startGame}>
                         <p>Play</p>

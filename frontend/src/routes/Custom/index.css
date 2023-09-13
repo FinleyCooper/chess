@@ -4,15 +4,15 @@
     width: 100%;
     height: 100%;
     color: #5a5a5a;
+
 }
 
 .customisation-option-container {
     width: 900px;
-    height: 515px;
+    height: 300px;
     display: grid;
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr;
-
     gap: 175px;
     place-items: center stretch;
 
@@ -74,4 +74,17 @@
     height: 100%;
     display: grid;
     place-items: center;
+}
+
+.customisation-slider-container {
+    width: 500px;
+    margin-bottom: 50px;
+}
+
+.customisation-slider-container>p {
+    margin: 0;
+}
+
+.customisation-slider {
+    width: 100%;
 }

@@ -4,7 +4,15 @@ import Search from './Search'
 import { StartingBoard, Pieces } from './constants'
 
 export interface Customisation {
+    strength: number
+    aggressiveness: number,
+    tradeHappy: number
+}
 
+export const defaultCustomisation: Customisation = {
+    strength: 100,
+    aggressiveness: 50,
+    tradeHappy: 50
 }
 
 
@@ -14,12 +22,12 @@ class Engine {
     customisation: Customisation
     moveHistory: Move[]
 
-    static fromStartingPosition(depth: number = 3, customisation: Customisation = {}) {
+    static fromStartingPosition(depth: number = 3, customisation: Customisation = defaultCustomisation) {
         const board = new Board(StartingBoard, 0x000)
         return new this(board, depth, customisation)
     }
 
-    constructor(board: Board, depth: number = 3, customisation: Customisation = {}, moveHistory = []) {
+    constructor(board: Board, depth: number = 3, customisation: Customisation = defaultCustomisation, moveHistory = []) {
         this.board = board
         this.depth = depth
         this.customisation = customisation
