@@ -29,7 +29,7 @@ class Custom extends React.Component<Props, State> {
         this.postGameResult = this.postGameResult.bind(this)
         this.startGame = this.startGame.bind(this)
         this.userMoves = this.userMoves.bind(this)
-        this.checkResult = this.checkResult.bind(this)
+        this.checkIfGameover = this.checkIfGameover.bind(this)
         this.handleSliderChange = this.handleSliderChange.bind(this)
 
         this.state = {
@@ -60,7 +60,7 @@ class Custom extends React.Component<Props, State> {
             body: JSON.stringify({
                 moveList: this.Engine?.getMoveListString(),
                 gameResult: gameResult,
-                customSettings: {},
+                customSettings: this.state.customisation,
                 humanPlaysAs: this.state.playingAs,
                 winner: winner,
             })
@@ -73,20 +73,23 @@ class Custom extends React.Component<Props, State> {
         }
         this.setState({ submitted: true })
 
-        this.Engine = Engine.fromStartingPosition(3, defaultCustomisation)
+        this.Engine = Engine.fromStartingPosition(defaultCustomisation)
 
         if (this.state.playingAs === Pieces.black) {
             this.Engine.computerMove()
         }
     }
 
-    checkResult() {
+    checkIfGameover() {
         if (this.Engine?.board.isCheckmate()) {
             this.postGameResult("Checkmate", this.Engine.board.sideToMove === Pieces.white ? Pieces.black : Pieces.white)
+            return true
         }
         if (this.Engine?.board.isStalemate()) {
             this.postGameResult("Stalemate", 0)
+            return true
         }
+        return false
     }
 
     userMoves(from: number, to: number) {
@@ -95,10 +98,13 @@ class Custom extends React.Component<Props, State> {
         }
 
         this.Engine.playerUCIMove(from, to)
-        this.checkResult()
+        if (this.checkIfGameover()) {
+            return
+        }
 
         this.Engine.computerMove()
-        this.checkResult()
+
+        this.checkIfGameover()
     }
 
     handleSliderChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -111,11 +117,17 @@ class Custom extends React.Component<Props, State> {
             case "Piece Exchanging Tendency":
                 attribute = "tradeHappy"
                 break
-            case "Engine Strength":
-                attribute = "strength"
+            case "Engine Depth":
+                attribute = "depth"
+                break
+            case "Positional Strength":
+                attribute = "positionalPlay"
+                break
+            case "Blind Spots":
+                attribute = "blindSpots"
                 break
             default:
-                throw new Error("Slider name doesn't correspond to attribute")
+                throw new Error(`Slider name ${e.target.name} doesn't correspond to attribute`)
         }
 
 
@@ -157,9 +169,12 @@ class Custom extends React.Component<Props, State> {
                         </div>
                     </div>
                     <div className="customisation-sliders-container">
-                        <CustomisationSlider onChange={this.handleSliderChange} label="Engine Strength" min={0} max={100} default={defaultCustomisation.strength} />
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Engine Depth" min={1} max={4} default={defaultCustomisation.depth} />
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Positional Strength" min={0} max={100} default={defaultCustomisation.positionalPlay} />
                         <CustomisationSlider onChange={this.handleSliderChange} label="Aggressiveness" min={0} max={100} default={defaultCustomisation.aggressiveness} />
+                        <CustomisationSlider onChange={this.handleSliderChange} label="Blind Spots" min={0} max={50} default={defaultCustomisation.blindSpots} />
                         <CustomisationSlider onChange={this.handleSliderChange} label="Piece Exchanging Tendency" min={0} max={100} default={defaultCustomisation.tradeHappy} />
+
                     </div>
                     <div className="submit-container" onClick={this.startGame}>
                         <p>Play</p>

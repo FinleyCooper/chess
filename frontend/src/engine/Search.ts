@@ -2,7 +2,8 @@ import Board from "./Board";
 import Evaluation from "./Evaluation";
 import Move from "./Move";
 import { pieceValue } from "./Evaluation";
-
+import { Customisation, defaultCustomisation } from "./Engine";
+import { PieceSquareTable } from "./Engine";
 
 function sortMoves(board: Board, moves: Array<Move>) {
     // Length of move array is usually around 30 per position so insertion sort is the choice for optimisation
@@ -49,8 +50,8 @@ function getEstimatedMoveGoodness(board: Board, move: Move) {
     return estimatedMoveGoodness
 }
 
-function simplifyPosition(board: Board, alpha: number, beta: number) {
-    const evaluation = Evaluation(board)
+function simplifyPosition(board: Board, alpha: number, beta: number, customisation: Customisation, pieceSquareTables: PieceSquareTable) {
+    const evaluation = Evaluation(board, customisation, pieceSquareTables)
 
     if (evaluation >= beta) {
         return beta
@@ -65,7 +66,7 @@ function simplifyPosition(board: Board, alpha: number, beta: number) {
 
     for (let i = 0; i < captures.length; i++) {
         board.playMove(captures[estimatedMoveOrder[i]])
-        const evaluation = -simplifyPosition(board, -beta, -alpha)
+        const evaluation = -simplifyPosition(board, -beta, -alpha, customisation, pieceSquareTables)
         board.unplayMove(captures[estimatedMoveOrder[i]])
 
         if (evaluation >= beta) {
@@ -79,14 +80,14 @@ function simplifyPosition(board: Board, alpha: number, beta: number) {
     return alpha
 }
 
-function search(board: Board, depth: number) {
+function search(board: Board, customisation: Customisation = defaultCustomisation, pieceSquareTables: PieceSquareTable) {
     let bestMove = new Move(0) // Dummy move
-    const maxDepth = depth
+    const maxDepth = customisation.depth
     const checkmateEval = -99999999999
 
     function searchDepth(board: Board, depth: number, alpha: number, beta: number) {
         if (depth == 0) {
-            return simplifyPosition(board, alpha, beta)
+            return simplifyPosition(board, alpha, beta, customisation, pieceSquareTables)
         }
 
         const moves = board.generateLegalMoves()
@@ -98,10 +99,21 @@ function search(board: Board, depth: number) {
             return 0 // Stalemate
         }
 
-        const estimatedMoveOrder = sortMoves(board, moves)
+        let seenMoves = moves.filter(_ => {
+            return Math.random() * 100 > customisation.blindSpots * (1 + ((depth - 1) / maxDepth))
+        })
+
+        let estimatedMoveOrder: Array<number>
+
+        if (seenMoves.length === 0) {
+            estimatedMoveOrder = [0]
+        }
+        else {
+            estimatedMoveOrder = sortMoves(board, seenMoves)
+        }
 
 
-        for (let i = 0; i < moves.length; i++) {
+        for (let i = 0; i < estimatedMoveOrder.length; i++) {
             board.playMove(moves[estimatedMoveOrder[i]])
             const evaluation = -searchDepth(board, depth - 1, -beta, -alpha)
             board.unplayMove(moves[estimatedMoveOrder[i]])

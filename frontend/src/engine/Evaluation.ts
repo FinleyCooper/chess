@@ -1,21 +1,6 @@
 import Board from "./Board";
-import { Pieces, PieceSquareTables } from "./constants";
-
-const BlackPieceSquareTables = PieceSquareTables
-const WhitePieceSquareTables: { [key: number]: Array<number> } = {}
-
-
-for (let i = 0; i < Object.keys(PieceSquareTables).length; i++) {
-    const table = PieceSquareTables[i + 1]
-
-    let reversedTable = []
-
-    for (let j = 0; j < table.length; j++) {
-        reversedTable.push(table[table.length - 1 - j])
-    }
-
-    WhitePieceSquareTables[i + 1] = reversedTable
-}
+import { Pieces } from "./constants";
+import { PieceSquareTable, Customisation } from "./Engine";
 
 export const pieceValue: { [key: number]: number } = {
     0: 0,
@@ -28,7 +13,7 @@ export const pieceValue: { [key: number]: number } = {
 }
 
 
-export default (board: Board) => {
+export default (board: Board, customisation: Customisation, pieceSquareTables: PieceSquareTable) => {
     // Positive is good for white, negative is good for black
 
     // Material Counting
@@ -47,7 +32,7 @@ export default (board: Board) => {
         hammingWeight += 1
     }
 
-    const isOpponentStruggling = hammingWeight < 5n
+    const isOpponentStruggling = hammingWeight < 8n
 
     for (let i = 0; i < 64; i++) {
         const pieceType = board.square[i].getType()
@@ -55,11 +40,11 @@ export default (board: Board) => {
 
         if (board.square[i].isColour(Pieces.white)) {
             whiteMaterial += pieceValue[pieceType]
-            whitePieceSquareBonus += WhitePieceSquareTables[pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1) // Material is more important in the endgame
+            whitePieceSquareBonus += pieceSquareTables[0][pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1) // Material is more important in the endgame
         }
         else if ((board.square[i].isColour(Pieces.black))) {
             blackMaterial += pieceValue[pieceType]
-            blackPieceSquareBonus += BlackPieceSquareTables[pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1)
+            blackPieceSquareBonus += pieceSquareTables[1][pieceSquareTableIndex][i] * (isOpponentStruggling ? 0.2 : 1)
         }
     }
 
@@ -94,12 +79,12 @@ export default (board: Board) => {
         checkingMatingBonus += 25 * (16 - corneringDistance)
     }
 
-
+    // If happy to trade, then we prefer boards with fewer pieces,
     if (board.sideToMove === Pieces.white) {
-        return whiteMaterial - blackMaterial + whitePieceSquareBonus - blackPieceSquareBonus + checkingMatingBonus
+        return whiteMaterial - blackMaterial + whitePieceSquareBonus - blackPieceSquareBonus + checkingMatingBonus + (-(customisation.tradeHappy - 50) * blackMaterial) * 0.0005
     }
     else {
-        return blackMaterial - whiteMaterial + blackPieceSquareBonus - whitePieceSquareBonus + checkingMatingBonus
+        return blackMaterial - whiteMaterial + blackPieceSquareBonus - whitePieceSquareBonus + checkingMatingBonus + (-(customisation.tradeHappy - 50) * whiteMaterial) * 0.0005
     }
 
 }
