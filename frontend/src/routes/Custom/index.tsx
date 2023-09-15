@@ -76,7 +76,11 @@ class Custom extends React.Component<Props, State> {
         this.Engine = Engine.fromStartingPosition(defaultCustomisation)
 
         if (this.state.playingAs === Pieces.black) {
+            this.Engine.setAggression(Pieces.white)
             this.Engine.computerMove()
+        }
+        else {
+            this.Engine.setAggression(Pieces.black)
         }
     }
 

@@ -1,6 +1,5 @@
-import Piece from '../components/BoardElement/Piece'
 import Board from './Board'
-import Move from './Move'
+import Move, { Pieces } from './Move'
 import Search from './Search'
 import { StartingBoard } from './constants'
 import { PieceSquareTables } from './constants'
@@ -54,19 +53,20 @@ class Engine {
             purePieceSquareTables[0][i + 1] = reversedTable
         }
 
-        this.pieceSquareTables = this.addAggression(this.addNormalNoise(purePieceSquareTables))
+        this.pieceSquareTables = this.addNormalNoise(purePieceSquareTables)
     }
 
-    addAggression(tables: PieceSquareTable): PieceSquareTable {
-        // tables.forEach(table => {
-        //     for (const key in table) {
-        //         table[key] = table[key].map(value => {
-        //             return 
-        //         })
-        //     }
-        // })
+    setAggression(sideTobeAggressive: number): void {
+        // Add aggression for own table only
+        const tableIndex: number = sideTobeAggressive === Pieces.white ? 0 : 1
 
-        return tables
+        for (const key in this.pieceSquareTables[tableIndex]) {
+            this.pieceSquareTables[tableIndex][key] = this.pieceSquareTables[tableIndex][key]
+                .map((value, index) => {
+                    console.log(Math.floor(sideTobeAggressive ? (index / 8) : (63 - index / 8)) * ((this.customisation.aggressiveness - 50) / 100) * 20)
+                    return value + Math.floor(sideTobeAggressive ? (index / 8) : (63 - index / 8)) * ((this.customisation.aggressiveness - 50) / 100) * 20
+                })
+        }
     }
 
     addNormalNoise(tables: PieceSquareTable): PieceSquareTable {
