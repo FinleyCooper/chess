@@ -2,3 +2,4 @@ __pycache__/
 .env
 database/data/*
 !database/data/.gitkeep
+database/Adventure Script.txt

@@ -4,6 +4,7 @@ import random
 import re
 import sqlite3
 
+from database import create_tables
 import constants as const
 import crypto_auth
 import database
@@ -16,6 +17,18 @@ app.config.from_object("config.DevConfig")
 connection = sqlite3.connect(const.database_path)
 
 db = database.Database(connection)
+
+create_tables.create_tables(connection)
+
+
+@app.route("/api/adventure-levels/<level_id>")
+def get_adventure_level(level_id):
+    level = db.get_adventure_level(level_id)
+
+    if level is None:
+        return jsonify({"error": True, "message": "Level does not exist"}), 404
+
+    return jsonify({"error": False, "data": level.to_dict()}), 200
 
 
 @app.route("/api/users/<user_id>/games/<game_id>/link", methods=["GET"])

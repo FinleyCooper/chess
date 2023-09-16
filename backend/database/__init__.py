@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 from typing import Tuple
+import json
 
 
 class User:
@@ -74,10 +75,35 @@ class Game:
         }
 
 
+class CampaignLevel:
+    text: list[str]
+    battle_settings: dict | None
+
+    def __init__(self, _id: str, text: str, battle_settings: str):
+        self._id = _id
+        self.text = json.loads(text)
+        self.battle_settings = json.loads(battle_settings) if battle_settings is not None else None
+
+    def to_dict(self):
+        return {"id": self._id, "text": self.text, "battle_settings": self.battle_settings}
+
+
 # An interface between the Flask app and the sqlite3 database
 class Database:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
+
+    def get_adventure_level(self, level_id: str):
+        cursor = self.connection.cursor()
+
+        cursor.execute("SELECT * FROM CampaignLevels WHERE Levelid = ?", (level_id,))
+
+        entry = cursor.fetchone()
+
+        if entry is None:
+            return None
+
+        return CampaignLevel(entry[0], entry[1], entry[2])
 
     def register_link(self, link_suffix: str = None, game_id: str = None):
         cursor = self.connection.cursor()
