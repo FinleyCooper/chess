@@ -21,6 +21,24 @@ db = database.Database(connection)
 create_tables.create_tables(connection)
 
 
+@app.route("/api/users/<user_id>/adventure-levels", methods=["PATCH"])
+@authorisation_required(level=const.AuthLevel.default)
+def update_adventure_level(user_id: str = None, decoded_token: dict = {}):
+    content = request.json
+
+    if not content:
+        return jsonify({"error": True, "message": "No data was provided in the request"}), 400
+
+    level_id = str(content.get("levelid"))
+
+    if not level_id:
+        return jsonify({"error": True, "message": "No valid level id was provided in the request"}), 400
+
+    db.update_adventure_level(user_id, level_id)
+
+    return jsonify({"error": False, "message": "Level id successfully updated"}), 200
+
+
 @app.route("/api/adventure-levels/<level_id>")
 def get_adventure_level(level_id):
     level = db.get_adventure_level(level_id)
@@ -133,6 +151,8 @@ def archive_game(user_id: str = None, decoded_token: dict = {}):
     custom_settings = content.get("customSettings")
     human_plays_as = int(content.get("humanPlaysAs"))
     winner = int(content.get("winner"))
+    level_id = str(content.get("levelid"))
+    campaign_id = str(content.get("campaignid"))
 
     if not move_list or not game_result or not human_plays_as or not winner:
         return jsonify({"error": True, "message": "All game data not provided in the request"}), 400
@@ -149,6 +169,8 @@ def archive_game(user_id: str = None, decoded_token: dict = {}):
         human_plays_as=human_plays_as,
         winner=winner,
         custom_settings=(json.dumps(custom_settings, sort_keys=True) if custom_settings is not None else None),
+        level_id=level_id,
+        campaign_id=campaign_id,
     )
 
     return jsonify({"error": False, "message": "Game successfully archived"}), 201

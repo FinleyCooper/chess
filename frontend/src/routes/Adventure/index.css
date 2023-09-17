@@ -4,3 +4,13 @@
     display: grid;
     place-items: center;
 }
+
+.centred-text {
+    width: 70%;
+    height: 200px;
+}
+
+.story-text {
+    font-size: 30px;
+    text-align: center;
+}

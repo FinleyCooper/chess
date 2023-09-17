@@ -19,7 +19,7 @@ levels = [
     {
         "id": 2,
         "text": [
-            "I wiped some of the battle's grime of my left shoulder before carrying on my journey.",
+            "I wiped some of the battle's grime off my left shoulder before carrying on my journey.",
             "After another day of walking and constant rain, my shoes squelched with each step I took.",
             "Through the rainfall, I could see a dimly lit figure under the light of a bridge lantern, arms crossed, with the gushing water of the river behind him.",
             "I approached the man and introduced myself.",

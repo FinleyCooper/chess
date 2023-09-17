@@ -24,7 +24,8 @@ class LoggedInContextProvider extends React.Component<Props, State> {
                 this.setState({
                     userData: {
                         id: data.data.id,
-                        displayName: data.data.name
+                        displayName: data.data.name,
+                        levelid: data.data.level_id
                     }
                 })
             }

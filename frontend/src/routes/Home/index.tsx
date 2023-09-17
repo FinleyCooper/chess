@@ -37,13 +37,6 @@ class Home extends React.Component<Props, State> {
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#adventure-symbol`} />
                         </svg>
-                        <div className="progression">
-                            <div className="progress-border">
-                                <p className="progress-bar-text">6/10</p>
-                            </div>
-                            <div className="progress-fluid">
-                            </div>
-                        </div>
                     </div>
                     <div onClick={(e) => this.redirect("/custom")} className="option">
                         <p className="option-title">Custom Game</p>

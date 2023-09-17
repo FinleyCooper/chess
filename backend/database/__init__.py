@@ -5,15 +5,22 @@ import json
 
 
 class User:
-    def __init__(self, _id: str, email: str, password_hash: str, auth_level: int, name: str):
+    def __init__(self, _id: str, email: str, password_hash: str, auth_level: int, name: str, level_id: str = None):
         self._id = _id
         self.email = email
         self.password_hash = password_hash
         self.auth_level = auth_level
         self.name = name
+        self.level_id = level_id
 
     def to_dict(self, inclucde_sensitive: bool = False):
-        dictionary = {"id": self._id, "email": self.email, "auth_level": self.auth_level, "name": self.name}
+        dictionary = {
+            "id": self._id,
+            "email": self.email,
+            "auth_level": self.auth_level,
+            "name": self.name,
+            "level_id": self.level_id,
+        }
 
         if inclucde_sensitive:
             dictionary["password_hash"] = self.password_hash
@@ -92,6 +99,13 @@ class CampaignLevel:
 class Database:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.connection = connection
+
+    def update_adventure_level(self, user_id: str, level_id: str):
+        cursor = self.connection.cursor()
+
+        cursor.execute("UPDATE UserCampaign SET Levelid = ? WHERE Userid = ?", (level_id, user_id))
+
+        self.connection.commit()
 
     def get_adventure_level(self, level_id: str):
         cursor = self.connection.cursor()
@@ -195,15 +209,17 @@ class Database:
         human_plays_as: str = None,
         winner: str = None,
         custom_settings: str = r"{}",
+        campaign_id: str = None,
+        level_id: str = None,
     ) -> None:
         cursor = self.connection.cursor()
 
         cursor.execute(
             """
-                INSERT INTO GameHistory (MoveList, GameResult, DatePlayed, CustomSettings, Userid, HumanPlaysAs, Winner)
-                VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?)
+                INSERT INTO GameHistory (MoveList, GameResult, DatePlayed, CustomSettings, Userid, HumanPlaysAs, Winner, Campaignid, Levelid)
+                VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?)
             """,
-            (move_list, game_result, custom_settings, user_id, human_plays_as, winner),
+            (move_list, game_result, custom_settings, user_id, human_plays_as, winner, campaign_id, level_id),
         )
 
         self.connection.commit()
@@ -212,9 +228,25 @@ class Database:
         cursor = self.connection.cursor()
 
         if _id:
-            cursor.execute("SELECT * FROM Users WHERE Userid = ?", (_id,))
+            cursor.execute(
+                """
+                    SELECT Users.*, UserCampaign.Levelid
+                    FROM Users
+                    JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
+                    WHERE UserCampaign.Userid = ?
+                """,
+                (_id,),
+            )
         elif email:
-            cursor.execute("SELECT * FROM Users WHERE Email = ?", (email,))
+            cursor.execute(
+                """
+                    SELECT Users.*, UserCampaign.Levelid
+                    FROM Users
+                    JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
+                    WHERE Users.Email = ?
+                """,
+                (email,),
+            )
         else:
             raise ValueError("An email or user id must be provided")
 
@@ -223,7 +255,7 @@ class Database:
         if not row:
             return None
 
-        return User(str(row[0]), row[1], row[2], row[3], row[4])
+        return User(str(row[0]), row[1], row[2], row[3], row[4], str(row[5]))
 
     def get_all_users(self):
         cursor = self.connection.cursor()
@@ -241,8 +273,10 @@ class Database:
             """
                        INSERT INTO Users
                        (Email, PasswordHash, AuthenticationLevel, Name)
-                       Values(?, ?, ?, ?)""",
+                       VALUES (?, ?, ?, ?)""",
             (email, password_hash, auth_level, name),
         )
+
+        cursor.execute("INSERT INTO UserCampaign (Userid, Levelid) VALUES (last_insert_rowid(), 1)", ())
 
         self.connection.commit()
