@@ -171,6 +171,14 @@ class Adventure extends React.Component<Props, State> {
             return (
                 <div className="page-content" onMouseMove={this.handleMouseMove}>
                     <div className="board-container">
+                        <div className="players-container">
+                            <div className="opponent-container">
+                                {this.state.name}
+                            </div>
+                            <div className="user-container">
+                                {this.context.displayName}
+                            </div>
+                        </div>
                         <BoardElement
                             board={this.Engine.board}
                             onUserAttemptsMove={this.userAttempsMove}
