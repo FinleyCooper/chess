@@ -6,7 +6,7 @@ import { precomputedKnightMoves } from "./utils/precalculations/results";
 import SquareCollection from "../SquareCollection";
 
 
-class Bishop extends BasePiece {
+class Knight extends BasePiece {
     constructor(colour: number) {
         super(colour | Pieces.knight)
     }
@@ -58,4 +58,4 @@ class Bishop extends BasePiece {
     }
 }
 
-export default Bishop
+export default Knight
