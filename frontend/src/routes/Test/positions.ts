@@ -134,25 +134,25 @@ const Talkchess = new Uint8Array([
 
 const testPositions: Array<TestPosition> = [
     {
-        name: "Starting Position",
+        name: "Test Position 1",
         board: StartingPosition,
         gameState: 0b000000000,
         expectedResults: [20, 400, 8902, 197281, 4865609, 119060324]
     },
     {
-        name: "Castling and Promotion",
+        name: "Test Position 2 (Mirrored)",
         board: CastlingAndPromotion,
         gameState: 0b001100000,
         expectedResults: [6, 264, 9467, 422333, 15833292, 706045033]
     },
     {
-        name: "Endgame Pins",
+        name: "Test Position 3",
         board: EndgamePins,
         gameState: 0b111100000,
         expectedResults: [14, 191, 2812, 43238, 674624, 11030083, 178633661]
     },
     {
-        name: "Talkchess Position",
+        name: "Test Position 4",
         board: Talkchess,
         gameState: 0b110000000,
         expectedResults: [44, 1486, 62379, 2103487, 89941194]
