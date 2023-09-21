@@ -77,7 +77,7 @@ class Engine {
             const u1 = Math.random()
             const u2 = Math.random()
 
-            // Use the Box-Muller Transform, which is bijection from [0,1] to (-∞,∞) with a standard normal distribution
+            // Use the Box-Muller Transform, which is bijection from [0,1]^2 to (-∞,∞) with a standard normal distribution
             // https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
             return Math.sqrt(-2 * Math.log(u1)) * Math.cos(u2 * 2 * Math.PI)
         }
