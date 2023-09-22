@@ -63,7 +63,6 @@ class Engine {
         for (const key in this.pieceSquareTables[tableIndex]) {
             this.pieceSquareTables[tableIndex][key] = this.pieceSquareTables[tableIndex][key]
                 .map((value, index) => {
-                    console.log(Math.floor(sideTobeAggressive ? (index / 8) : (63 - index / 8)) * ((this.customisation.aggressiveness - 50) / 100) * 20)
                     return value + Math.floor(sideTobeAggressive ? (index / 8) : (63 - index / 8)) * ((this.customisation.aggressiveness - 50) / 100) * 20
                 })
         }

@@ -11,12 +11,14 @@ class Board {
     sideToMoveIndex: number
     pieceCapturedPlyBefore: number
     pastGameStateStack: Array<number>
+    pastBoards: Array<number>
 
     square: Array<BasePiece>
     collections: Array<Array<SquareCollection>>
 
     constructor(binaryBoard: Uint8Array, gameState: number) {
         this.pastGameStateStack = [] // LIFO stack
+        this.pastBoards = [] // LIFO stack
 
         this.sideToMoveIndex = (gameState & 0b1) // 0 is white and 1 is black
         this.sideToMove = this.sideToMoveIndex ? Pieces.black : Pieces.white
@@ -111,9 +113,16 @@ class Board {
         return move
     }
 
+    hashBoard(): number {
+        return this.square.reduce((running_total, currentPiece, index) => {
+            return running_total ^ (currentPiece.datum << (index >> 1)) // max index is 63, so max (index >> 1) is 31, within the javascript limit of 32 bits for bitwise operations 
+        }, this.getGameState())
+    }
+
     playMove(move: Move) {
         // Calculate the current game state and push it to the top of the pastGameState stack
         this.pastGameStateStack.push(this.getGameState())
+        this.pastBoards.push(this.hashBoard())
 
         const flag = move.getFlag()
         const dest = move.getDestinationSquare()
@@ -232,6 +241,7 @@ class Board {
     unplayMove(move: Move) {
         // Remove the most recent gamestate
         const newGameState = this.pastGameStateStack.pop()
+        this.pastBoards.pop()
 
         if (newGameState === undefined) {
             throw "No move to unplay!"

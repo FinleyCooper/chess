@@ -114,13 +114,24 @@ function search(board: Board, customisation: Customisation = defaultCustomisatio
 
 
         for (let i = 0; i < estimatedMoveOrder.length; i++) {
-            board.playMove(moves[estimatedMoveOrder[i]])
-            const evaluation = -searchDepth(board, depth - 1, -beta, -alpha)
-            board.unplayMove(moves[estimatedMoveOrder[i]])
+            const move = moves[estimatedMoveOrder[i]]
+            board.playMove(move)
+
+            let evaluation;
+
+            if (board.pastBoards.includes(board.hashBoard()) && depth < maxDepth) {
+                board.unplayMove(move)
+                return 0 // Cut the branch as a draw
+            }
+            else {
+                evaluation = -searchDepth(board, depth - 1, -beta, -alpha)
+            }
+
+            board.unplayMove(move)
 
             if (evaluation >= beta) {
                 if (depth === maxDepth) {
-                    bestMove = moves[estimatedMoveOrder[i]]
+                    bestMove = move
                 }
                 // Cut this branch. This branch is now a leaf. The move before was too good, so our opponent will never get to this postion.
                 return beta
@@ -128,7 +139,7 @@ function search(board: Board, customisation: Customisation = defaultCustomisatio
 
             if (evaluation > alpha) {
                 if (depth === maxDepth) {
-                    bestMove = moves[estimatedMoveOrder[i]]
+                    bestMove = move
                 }
                 alpha = evaluation
             }
