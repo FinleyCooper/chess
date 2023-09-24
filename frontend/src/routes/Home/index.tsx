@@ -50,7 +50,7 @@ class Home extends React.Component<Props, State> {
                             <use href={`${pieceSVGs}#analysis-symbol`} />
                         </svg>
                     </div>
-                    <div className="option">
+                    <div onClick={(e) => this.redirect("/settings")} className="option">
                         <p className="option-title">Settings</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#settings-symbol`} />

@@ -62,7 +62,7 @@ def get_shareable_link(user_id: str = None, game_id: str = None, decoded_token: 
 
     db.register_link(link_suffix=link_suffix, game_id=game_id)
 
-    return jsonify({"error": True, "data": {"linkPath": f"/s/{link_suffix}"}}), 200
+    return jsonify({"error": False, "data": {"linkPath": f"/s/{link_suffix}"}}), 200
 
 
 @app.route("/s/<link_suffix>", methods=["GET"])

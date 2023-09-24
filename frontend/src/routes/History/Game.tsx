@@ -31,6 +31,7 @@ class History extends React.Component<Props, State> {
         fetch(`/api/users/${this.context.id}/games/${id}/link`).then(resp => resp.json()).then(data => {
             if (!data.error) {
                 navigator.clipboard.writeText(`${window.location.origin}${data.data.linkPath}`)
+                alert("copied to clipboard")
             }
         })
 
