@@ -112,11 +112,15 @@ class Engine {
         return Search(this.board, this.customisation, this.pieceSquareTables)
     }
 
-    computerMove(): Move {
-        const move = this.getBestMove()
-        this.board.playMove(move)
-        this.moveHistory.push(move)
-        return move
+    async computerMove(): Promise<Move> {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const move = this.getBestMove()
+                this.board.playMove(move)
+                this.moveHistory.push(move)
+                resolve(move)
+            }, 20)
+        })
     }
 
     playerMove(move: Move): Move {

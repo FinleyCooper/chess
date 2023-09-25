@@ -1,8 +1,10 @@
 interface BoardCustomisation {
-    lightSquares: string;
-    darkSquares: string;
-    activeSquare: string;
-    allowedMove: string;
+    lightSquares: string
+    darkSquares: string
+    activeSquare: string
+    allowedMove: string
+    lastMoveDestination: string
+    lastMoveSource: string
 }
 
 export const squareLength: number = 100 // Pixels
@@ -10,8 +12,10 @@ export const squareLength: number = 100 // Pixels
 export const initialColours: BoardCustomisation = {
     lightSquares: "#f0d9b5",
     darkSquares: "#b58863",
-    activeSquare: "#ccdaaf",
-    allowedMove: "#ffffff"
+    activeSquare: "#ffffff",
+    allowedMove: "#000",
+    lastMoveDestination: "#ffdd47",
+    lastMoveSource: "#ffeb94"
 }
 
 export const Pieces = {

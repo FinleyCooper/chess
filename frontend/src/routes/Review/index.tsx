@@ -12,6 +12,7 @@ interface State {
     mouseY: number
     game: Game | null
     moveIndex: number
+    lastMove: Move | null
 }
 
 interface Props {
@@ -28,7 +29,8 @@ class Review extends React.Component<Props, State> {
             mouseX: 0,
             mouseY: 0,
             game: null,
-            moveIndex: 0
+            moveIndex: 0,
+            lastMove: null
         }
 
         this.Engine = Engine.fromStartingPosition()
@@ -67,16 +69,17 @@ class Review extends React.Component<Props, State> {
             return
         }
 
-        const move = this.state.game.UCIMoveHistory[this.state.moveIndex]
+        const uciMove = this.state.game.UCIMoveHistory[this.state.moveIndex]
 
-        if (move === undefined) {
+        if (uciMove === undefined) {
             return
         }
 
-        this.Engine.playerUCIMove(move[0], move[1])
+        const move = this.Engine.playerUCIMove(uciMove[0], uciMove[1])
 
         this.setState({
-            moveIndex: this.state.moveIndex + 1
+            moveIndex: this.state.moveIndex + 1,
+            lastMove: move
         })
     }
 
@@ -84,8 +87,15 @@ class Review extends React.Component<Props, State> {
         return (
             <div className="review-container" onMouseMove={this.handleMouseMove}>
                 <div className="board-container">
-                    <BoardElement sideFacingForward={this.state.game?.viewAs ? this.state.game.viewAs : 16} onUserAttemptsMove={() => { }} board={this.Engine.board} mouseX={this.state.mouseX} mouseY={this.state.mouseY} />
-                    <button onClick={this.nextMove}>Next Move</button>
+                    <BoardElement
+                        sideFacingForward={this.state.game?.viewAs ? this.state.game.viewAs : 16}
+                        onUserAttemptsMove={() => { }}
+                        board={this.Engine.board}
+                        mouseX={this.state.mouseX}
+                        mouseY={this.state.mouseY}
+                        lastMove={this.state.lastMove}
+                    />
+                    <button className="next-move-button" onClick={this.nextMove}>Next Move</button>
                 </div>
             </div>
         )

@@ -8,6 +8,7 @@ import { Customisation, defaultCustomisation } from '../../engine/Engine'
 import CustomisationSlider from './CustomisationSlider'
 
 import "./index.css"
+import Move from '../../engine/Move'
 
 interface Props { }
 interface State {
@@ -16,6 +17,8 @@ interface State {
     mouseX: number
     mouseY: number
     customisation: Customisation
+    lastMove: Move | null
+    gameResult: string
 }
 
 class Custom extends React.Component<Props, State> {
@@ -38,6 +41,8 @@ class Custom extends React.Component<Props, State> {
             mouseX: 0,
             mouseY: 0,
             customisation: defaultCustomisation,
+            lastMove: null,
+            gameResult: ""
         }
 
         this.Engine = null
@@ -52,6 +57,10 @@ class Custom extends React.Component<Props, State> {
     }
 
     postGameResult(gameResult: string, winner: number) {
+        console.log("ere")
+        this.setState({
+            gameResult: gameResult
+        })
         fetch(`/api/users/${this.context.id}/games`, {
             headers: {
                 "content-type": "application/json"
@@ -78,6 +87,9 @@ class Custom extends React.Component<Props, State> {
         if (this.state.playingAs === Pieces.black) {
             this.Engine.setAggression(Pieces.white)
             this.Engine.computerMove()
+                .then(engineMove => {
+                    this.setState({ lastMove: engineMove })
+                })
         }
         else {
             this.Engine.setAggression(Pieces.black)
@@ -101,14 +113,19 @@ class Custom extends React.Component<Props, State> {
             return
         }
 
-        this.Engine.playerUCIMove(from, to)
+        const move = this.Engine.playerUCIMove(from, to)
+        this.setState({ lastMove: move })
+
         if (this.checkIfGameover()) {
             return
         }
 
         this.Engine.computerMove()
+            .then(engineMove => {
+                this.setState({ lastMove: engineMove })
+                this.checkIfGameover()
+            })
 
-        this.checkIfGameover()
     }
 
     handleSliderChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -146,13 +163,18 @@ class Custom extends React.Component<Props, State> {
     render() {
         return this.state.submitted && this.Engine ? (
             <div className="page-content" onMouseMove={this.handleMouseMove}>
+                <div className="game-result">
+                    <p>{this.state.gameResult}</p>
+                </div>
                 <div className="board-container">
                     <BoardElement
                         board={this.Engine.board}
                         sideFacingForward={this.state.playingAs}
                         onUserAttemptsMove={this.userMoves}
                         mouseX={this.state.mouseX}
-                        mouseY={this.state.mouseY} />
+                        mouseY={this.state.mouseY}
+                        lastMove={this.state.lastMove}
+                    />
                 </div>
             </div>
         ) :

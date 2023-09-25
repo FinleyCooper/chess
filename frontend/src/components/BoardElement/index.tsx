@@ -16,7 +16,9 @@ interface Props {
     onUserAttemptsMove: (from: number, to: number) => void
     mouseX: number,
     mouseY: number,
-    sideFacingForward: number
+    sideFacingForward: number,
+    lastMove: Move | null,
+
 }
 
 function pieceTranslation(isDragging: boolean, humanPlaysAs: number, dragX: number, dragY: number, col: number, row: number) {
@@ -104,6 +106,7 @@ class BoardElement extends React.Component<Props, State> {
         let avaliableSquares: number[] = draggingPieceIndex === null ? [] : this.getAvaliableMovesFrom(draggingPieceIndex)
 
         const squares: JSX.Element[] = []
+        const squareMasks: JSX.Element[] = []
         const pieces: JSX.Element[] = []
 
         for (let i = 0; i < 64; i++) {
@@ -113,11 +116,21 @@ class BoardElement extends React.Component<Props, State> {
             let colour: string = (row + column) % 2 === (this.props.sideFacingForward === Pieces.white ? 0 : 1) ? initialColours.darkSquares : initialColours.lightSquares
             const translatedIndex = this.props.sideFacingForward === Pieces.white ? i : (row * 8 + 7 - column)
 
+            let colourMask = "#00000000"
+
+            if (this.props.lastMove && translatedIndex) {
+                if (this.props.lastMove.getDestinationSquare() === translatedIndex) {
+                    colourMask = initialColours.lastMoveDestination
+                }
+                else if (this.props.lastMove.getSourceSquare() === translatedIndex) {
+                    colourMask = initialColours.lastMoveSource
+                }
+            }
             if (translatedIndex == draggingPieceIndex) {
-                colour = initialColours.activeSquare
+                colourMask = initialColours.activeSquare
             }
             else if (avaliableSquares.includes(translatedIndex)) {
-                colour = initialColours.allowedMove
+                colourMask = initialColours.allowedMove
             }
 
 
@@ -136,8 +149,15 @@ class BoardElement extends React.Component<Props, State> {
                 height: squareLength,
             }
 
+            const squareMaskStyles: React.CSSProperties = {
+                backgroundColor: colourMask,
+                width: squareLength,
+                height: squareLength,
+            }
+
             if (this.props.sideFacingForward === Pieces.white) {
                 squareStyles.gridRowStart = 8 - row
+                squareMaskStyles.gridRowStart = 8 - row
             }
 
             squares.push(
@@ -145,9 +165,17 @@ class BoardElement extends React.Component<Props, State> {
                     key={i}
                     className="square"
                     style={squareStyles}
-                >
-                </div>
+                ></div>
             )
+
+            squareMasks.push(
+                <div
+                    key={i}
+                    className="square-mask"
+                    style={squareMaskStyles}
+                ></div>
+            )
+
 
             let pieceNumericValue = this.props.board.square[i].datum
 
@@ -168,6 +196,9 @@ class BoardElement extends React.Component<Props, State> {
             <div className="board" ref={this.boardRef}>
                 <div className="squares" draggable="false">
                     {squares}
+                </div>
+                <div className="square-masks" draggable="false">
+                    {squareMasks}
                 </div>
                 {pieces}
             </div>

@@ -81,10 +81,19 @@
     margin-bottom: 50px;
 }
 
-.customisation-slider-container>p {
-    margin: 0;
-}
 
 .customisation-slider {
     width: 100%;
+}
+
+p {
+    margin: 0px;
+}
+
+.game-result {
+    position: fixed;
+    font-size: 30px;
+    top: 0;
+    left: 0;
+    margin: 25px;
 }

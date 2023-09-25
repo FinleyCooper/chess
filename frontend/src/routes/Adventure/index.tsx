@@ -5,6 +5,7 @@ import Engine, { Customisation } from "../../engine/Engine";
 
 import "./index.css"
 import { Pieces } from "../../engine/constants";
+import Move from "../../engine/Move";
 
 interface Props { }
 
@@ -15,6 +16,7 @@ interface State {
     text: Array<string> | null
     name: string
     textIndex: number
+    lastMove: Move | null
 }
 
 const LAST_LEVEL_ID = "9"
@@ -34,7 +36,8 @@ class Adventure extends React.Component<Props, State> {
             customisation: null,
             text: null,
             name: "",
-            textIndex: 0
+            textIndex: 0,
+            lastMove: null
         }
 
         this.Engine = null
@@ -129,14 +132,21 @@ class Adventure extends React.Component<Props, State> {
             return
         }
 
-        this.Engine.playerUCIMove(from, to)
+        const move = this.Engine.playerUCIMove(from, to)
+        this.setState({ lastMove: move })
+
+
         if (this.checkIfGameover()) {
             return
         }
 
         this.Engine.computerMove()
+            .then(engineMove => {
+                this.setState({ lastMove: engineMove })
+                this.checkIfGameover()
+            })
 
-        this.checkIfGameover()
+
     }
 
     handleMouseMove = (event: React.MouseEvent) => {
@@ -185,6 +195,7 @@ class Adventure extends React.Component<Props, State> {
                             sideFacingForward={16}
                             mouseX={this.state.mouseX}
                             mouseY={this.state.mouseY}
+                            lastMove={this.state.lastMove}
                         />
                     </div>
                 </div>
