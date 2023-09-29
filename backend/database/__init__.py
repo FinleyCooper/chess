@@ -1,12 +1,30 @@
 import sqlite3
 from typing import Tuple
 from database.table_classes import CampaignLevel, User, Link, Game
-
+from database.create_tables import create_tables
 
 # An interface between the Flask app and the sqlite3 database
 class Database:
     def __init__(self, connection: sqlite3.Connection) -> None:
+        connection.execute("PRAGMA foregin_keys = ON")
+        create_tables(connection)
+        
         self.connection = connection
+
+    def update_user(self, user_id: str, display_name: str):
+        cursor = self.connection.cursor()
+
+        cursor.execute("UPDATE Users SET Name = ? WHERE Userid = ?", (display_name, user_id))
+
+        self.connection.commit()
+    
+
+    def delete_user(self, user_id: str):
+        cursor = self.connection.cursor()
+
+        cursor.execute("DELETE FROM Users WHERE Userid = ?", (user_id,))
+        
+        self.connection.commit()
 
     def update_adventure_level(self, user_id: str, level_id: str):
         cursor = self.connection.cursor()

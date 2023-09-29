@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Navigate } from "react-router-dom";
 
-import TextInput from "./../TextInput"
+import TextInput from "../../../components/TextInput"
 
 import "../index.css";
 

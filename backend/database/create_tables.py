@@ -24,7 +24,7 @@ def create_tables(connection):
             Campaignid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             Userid INTEGER NOT NULL,
             Levelid INTEGER NOT NULL,
-            FOREIGN KEY (Userid) REFERENCES Users (Userid),
+            FOREIGN KEY (Userid) REFERENCES Users (Userid) ON DELETE CASCADE,
             FOREIGN KEY (Levelid) REFERENCES CampaignLevels (Levelid)
         );
 

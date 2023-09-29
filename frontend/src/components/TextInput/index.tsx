@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler } from "react";
 
-import "./TextInput.css";
+import "./index.css";
 
 interface Props {
     onBlur?: ChangeEventHandler<HTMLInputElement>,

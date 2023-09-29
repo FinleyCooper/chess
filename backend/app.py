@@ -4,7 +4,6 @@ import random
 import re
 import sqlite3
 
-from database import create_tables
 import constants as const
 import crypto_auth
 import database
@@ -18,8 +17,39 @@ connection = sqlite3.connect(const.database_path)
 
 db = database.Database(connection)
 
-create_tables.create_tables(connection)
 
+@app.route("/api/users/<user_id>", methods=["PATCH"])
+@authorisation_required(level=const.AuthLevel.default)
+def update_display_name(user_id: str = None, decoded_token: dict = {}):
+    content = request.json
+
+    display_name = str(content.get("displayName"))
+
+    if not display_name:
+        return jsonify({"error": True, "message": "Invalid details given to update"}), 400
+    
+    db.update_user(user_id=user_id, display_name=display_name)
+
+    return jsonify({"error": False, "message": "User successfully updated"}), 200
+
+
+
+@app.route("/api/users/<user_id>", methods=["DELETE"])
+@authorisation_required(level=const.AuthLevel.default)
+def delete_user(user_id: str = None, decoded_token: dict = {}):
+    db.delete_user(user_id=user_id)
+
+    response = jsonify({"error": False, "message": "User successfully deleted"})
+        
+    response.set_cookie(
+        "token", value="deleted", expires=0, secure=True, httponly=True, samesite="Strict", domain=app.config["DOMAIN"]
+    )
+
+    response.set_cookie(
+        "isLoggedIn", "false", expires=0, httponly=False, samesite="Strict", domain=app.config["DOMAIN"]
+    )
+
+    return response, 200
 
 @app.route("/api/users/<user_id>/adventure-levels", methods=["PATCH"])
 @authorisation_required(level=const.AuthLevel.default)

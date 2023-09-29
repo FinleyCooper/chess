@@ -1,0 +1,15 @@
+.submit {
+    color: #525151;
+    background-color: #faf1ff;
+    border: none;
+    padding: 10px 20px 10px 20px;
+    font-size: 1.1em;
+    border-radius: 20px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.settings-page {
+    padding: 20px 50px;
+    width: 300px;
+}
