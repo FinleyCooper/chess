@@ -17,6 +17,8 @@ connection = sqlite3.connect(const.database_path)
 
 db = database.Database(connection)
 
+# Insert admin
+db.insert_user(email="admin", password_hash=crypto_auth.create_password_hash(app.config["ADMIN_PASSWORD"]), auth_level=5, name="Admin")
 
 @app.route("/api/users/<user_id>", methods=["PATCH"])
 @authorisation_required(level=const.AuthLevel.default)
