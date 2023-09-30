@@ -25,7 +25,7 @@ def update_display_name(user_id: str = None, decoded_token: dict = {}):
 
     display_name = str(content.get("displayName"))
 
-    if not display_name:
+    if not display_name or not re.match(const.displayNameRegex, display_name):
         return jsonify({"error": True, "message": "Invalid details given to update"}), 400
     
     db.update_user(user_id=user_id, display_name=display_name)
