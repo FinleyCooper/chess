@@ -96,7 +96,7 @@ class Adventure extends React.Component<Props, State> {
             headers: {
                 "content-type": "application/json"
             },
-            method: "POST",
+            method: "PUT",
             body: JSON.stringify({
                 moveList: this.Engine?.getMoveListString(),
                 gameResult: gameResult,
