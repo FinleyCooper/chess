@@ -8,8 +8,8 @@ from flask import current_app, jsonify, request
 def match_scopes(token: dict, scopes: dict):
     if type(token) != dict:
         return False
-    
-    if token["authorisation_level"] >= const.AuthLevel.admin:
+
+    if token.get("authorisation_level", 0) >= const.AuthLevel.admin:
         return True
 
     for key, value in scopes.items():
