@@ -18,7 +18,9 @@ connection = sqlite3.connect(const.database_path)
 db = database.Database(connection)
 
 # Insert admin
-db.insert_user(email="admin", password_hash=crypto_auth.create_password_hash(app.config["ADMIN_PASSWORD"]), auth_level=5, name="Admin")
+if not db.get_user(email='admin'):
+    print("Users table does not contain an admin user, adding one...")
+    db.insert_user(email="admin", password_hash=crypto_auth.create_password_hash(app.config["ADMIN_PASSWORD"]), auth_level=5, name="Admin")
 
 @app.route("/api/users/<user_id>", methods=["PATCH"])
 @authorisation_required(level=const.AuthLevel.default)
@@ -99,10 +101,13 @@ def get_shareable_link(user_id: str = None, game_id: str = None, decoded_token: 
 
 @app.route("/s/<link_suffix>", methods=["GET"])
 def redirect_to_game(link_suffix: str = None):
-    link, user_id = db.get_link(link_suffix)
-
-    if link is None:
+    database_response = db.get_link(link_suffix)
+    
+    if database_response is None:
         return "Link does not exist", 404
+    
+    link, user_id = database_response
+
     if link.isExpired():
         return "Link has expired", 400
 
@@ -178,13 +183,13 @@ def archive_game(user_id: str = None, decoded_token: dict = {}):
     if not content:
         return jsonify({"error": True, "message": "No data was provided in the request"}), 400
 
-    move_list = str(content.get("moveList"))
-    game_result = str(content.get("gameResult"))
-    custom_settings = content.get("customSettings")
-    human_plays_as = int(content.get("humanPlaysAs"))
-    winner = int(content.get("winner"))
-    level_id = str(content.get("levelid"))
-    campaign_id = str(content.get("campaignid"))
+    move_list = str(content.get("moveList", ""))
+    game_result = str(content.get("gameResult", ""))
+    custom_settings = content.get("customSettings", {})
+    human_plays_as = int(content.get("humanPlaysAs", 0))
+    winner = int(content.get("winner", 0))
+    level_id = str(content.get("levelid", ""))
+    campaign_id = str(content.get("campaignid", ""))
 
     if not move_list or not game_result or not human_plays_as or not winner:
         return jsonify({"error": True, "message": "All game data not provided in the request"}), 400
@@ -215,17 +220,17 @@ def signup():
     if not content:
         return jsonify({"error": True, "message": "No data was provided in the request"}), 400
 
-    email = str(content.get("email"))
-    name = str(content.get("name"))
-    password = str(content.get("password"))
+    email = str(content.get("email", ""))
+    name = str(content.get("name", ""))
+    password = str(content.get("password", ""))
 
-    if email is None or not re.match(const.emailRegex, email):
+    if email == "" or not re.match(const.emailRegex, email):
         return jsonify({"error": True, "message": "Valid email not provided in the request"}), 400
 
-    if name is None or not re.match(const.displayNameRegex, name):
+    if name == "" or not re.match(const.displayNameRegex, name):
         return jsonify({"error": True, "message": "Valid display name not provided in the request"}), 400
 
-    if password is None or not re.match(const.passwordRegex, password):
+    if password == "" or not re.match(const.passwordRegex, password):
         return jsonify({"error": True, "message": "Valid password not provided in the request"}), 400
 
     user_exists = db.get_user(email=email) is not None
@@ -247,13 +252,13 @@ def login():
     if not content:
         return jsonify({"error": True, "message": "No data was provided in the request"}), 400
 
-    email = str(content.get("email"))
-    password = str(content.get("password"))
+    email = str(content.get("email", ""))
+    password = str(content.get("password", ""))
 
-    if email is None:
+    if email == "":
         return jsonify({"error": True, "message": "Email not provided in the request"}), 400
 
-    if password is None:
+    if password == "":
         return jsonify({"error": True, "message": "Password not provided in the request"}), 400
 
     user = db.get_user(email=email)
