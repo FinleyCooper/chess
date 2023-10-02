@@ -52,17 +52,6 @@ input[type="checkbox"] {
     accent-color: #ffd8f2;
 }
 
-.submit {
-    color: #525151;
-    background-color: #faf1ff;
-    border: none;
-    padding: 10px 20px 10px 20px;
-    font-size: 1.1em;
-    border-radius: 20px;
-    margin-top: 15px;
-    cursor: pointer;
-}
-
 .already-registed,
 .not-registed {
     font-size: 1em;

@@ -45,6 +45,32 @@ class Adventure extends React.Component<Props, State> {
         this.fetchLevel = this.fetchLevel.bind(this)
         this.handleNextText = this.handleNextText.bind(this)
         this.userAttempsMove = this.userAttempsMove.bind(this)
+        this.formatText = this.formatText.bind(this)
+    }
+
+    formatText(text: string): JSX.Element {
+        const personalisedText = text
+            .replaceAll("<<<displayname>>>", this.context.displayName)
+            .replaceAll("<<<first-letter-of-displayname>>>", this.context.displayName.charAt(0))
+
+        if (personalisedText.startsWith("[SPEECH:")) {
+            const endBracketIndex = personalisedText.indexOf("]")
+            let speaker = personalisedText.slice(8, endBracketIndex)
+
+            if (speaker === "MC") {
+                speaker = this.context.displayName
+            }
+
+            const speech = personalisedText.slice(endBracketIndex + 1)
+
+            return (
+                <p className="story-text"><span className={'speech-marker' + (speaker === this.context.displayName ? " mc" : "")}>{speaker}</span> - "{speech}"</p>
+            )
+        }
+
+        return (
+            <p className="story-text">{text}</p>
+        )
     }
 
     fetchLevel(): void {
@@ -205,7 +231,7 @@ class Adventure extends React.Component<Props, State> {
             return (
                 <div className="page-content">
                     <div className="centred-text">
-                        <p className="story-text">{this.state.text[this.state.textIndex]}</p>
+                        {this.formatText(this.state.text[this.state.textIndex])}
                     </div>
                     <button onClick={this.handleNextText}> Continue...</button>
                 </div>

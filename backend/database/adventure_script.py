@@ -55,7 +55,7 @@ levels = [
             "aggressiveness": 30,
             "positionalPlay": 90,
             "tradeHappy": 20,
-            "blindSpots": 30,
+            "blindSpots": 35,
         },
     },
     {
@@ -77,7 +77,7 @@ levels = [
             "aggressiveness": 100,
             "positionalPlay": 30,
             "tradeHappy": 100,
-            "blindSpots": 30,
+            "blindSpots": 35,
         },
     },
     {
@@ -100,7 +100,7 @@ levels = [
             "aggressiveness": 20,
             "positionalPlay": 100,
             "tradeHappy": 30,
-            "blindSpots": 20,
+            "blindSpots": 25,
         },
     },
     {
@@ -124,7 +124,7 @@ levels = [
             "aggressiveness": 0,
             "positionalPlay": 0,
             "tradeHappy": 50,
-            "blindSpots": 15,
+            "blindSpots": 20,
         },
     },
     {
@@ -143,7 +143,7 @@ levels = [
             "aggressiveness": 40,
             "positionalPlay": 60,
             "tradeHappy": 30,
-            "blindSpots": 15,
+            "blindSpots": 20,
         },
     },
     {
@@ -158,11 +158,11 @@ levels = [
         ],
         "battle": {
             "name": "Dragon of Valnera",
-            "depth": 3,
+            "depth": 2,
             "aggressiveness": 50,
             "positionalPlay": 80,
             "tradeHappy": 40,
-            "blindSpots": 10,
+            "blindSpots": 15,
         },
     },
     {

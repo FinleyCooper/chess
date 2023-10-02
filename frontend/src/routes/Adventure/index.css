@@ -32,3 +32,15 @@
     padding: 50px 0;
     font-size: 20px;
 }
+
+.speech-marker {
+    font-weight: bold;
+}
+
+.speech-marker.mc {
+    color: #fad637;
+}
+
+.speech-marker:not(.mc) {
+    color: #2a95c7;
+}

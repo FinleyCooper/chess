@@ -20,3 +20,14 @@ body,
   height: 100%;
   width: 100%;
 }
+
+button {
+  color: #525151;
+  background-color: #faf1ff;
+  border: none;
+  padding: 10px 20px 10px 20px;
+  font-size: 1.1em;
+  border-radius: 20px;
+  margin-top: 15px;
+  cursor: pointer;
+}
