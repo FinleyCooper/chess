@@ -6,6 +6,7 @@ import Engine, { Customisation } from "../../engine/Engine";
 import "./index.css"
 import { Pieces } from "../../engine/constants";
 import Move from "../../engine/Move";
+import AdventureResults from "./AdventureResults";
 
 interface Props { }
 
@@ -17,6 +18,8 @@ interface State {
     name: string
     textIndex: number
     lastMove: Move | null
+    allGames: Array<any> | null
+    showFinalCard: boolean
 }
 
 const LAST_LEVEL_ID = "9"
@@ -37,7 +40,9 @@ class Adventure extends React.Component<Props, State> {
             text: null,
             name: "",
             textIndex: 0,
-            lastMove: null
+            lastMove: null,
+            allGames: null,
+            showFinalCard: false
         }
 
         this.Engine = null
@@ -49,6 +54,10 @@ class Adventure extends React.Component<Props, State> {
     }
 
     formatText(text: string): JSX.Element {
+        if (!text) {
+            return <></>
+        }
+
         const personalisedText = text
             .replaceAll("<<<displayname>>>", this.context.displayName)
             .replaceAll("<<<first-letter-of-displayname>>>", this.context.displayName.charAt(0))
@@ -74,19 +83,36 @@ class Adventure extends React.Component<Props, State> {
     }
 
     fetchLevel(): void {
-        if (this.context.levelid === "0" || this.state.name !== "") {
+        if (this.context.levelid === "0" || this.state.text?.length) {
             return
+        }
+
+        if (this.context.levelid == LAST_LEVEL_ID && this.state.allGames == null) {
+            fetch(`/api/users/${this.context.id}/games/all`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if (!data.error) {
+                        this.setState({
+                            allGames: data.data
+                        })
+                    }
+                })
         }
 
         fetch(`/api/adventure-levels/${this.context.levelid}`)
             .then(resp => resp.json())
             .then(data => {
-                const name = data.data.battle_settings.name
-                delete data.data.battle_settings.name
+                if (data.data.battle_settings) {
+                    const name = data.data.battle_settings.name
+                    delete data.data.battle_settings.name
+
+                    this.setState({
+                        customisation: data.data.battle_settings,
+                        name: name,
+                    })
+                }
 
                 this.setState({
-                    customisation: data.data.battle_settings,
-                    name: name,
                     text: data.data.text
                 })
             })
@@ -95,11 +121,6 @@ class Adventure extends React.Component<Props, State> {
     componentDidUpdate = this.componentDidMount = this.fetchLevel
 
     nextLevel() {
-        if (this.context.levelid === LAST_LEVEL_ID) {
-            // Adventure finshed
-            return
-        }
-
         fetch(`/api/users/${this.context.id}/adventure-levels`, {
             method: "PATCH",
             headers: {
@@ -136,7 +157,12 @@ class Adventure extends React.Component<Props, State> {
             .then(resp => resp.json())
             .then(data => {
                 if (!data.error) {
-                    this.nextLevel()
+                    if (winner == 16) {
+                        this.nextLevel() // TODO: CHANGE
+                    }
+                    else {
+                        window.location.reload()
+                    }
                 }
             })
     }
@@ -187,7 +213,13 @@ class Adventure extends React.Component<Props, State> {
             return
         }
 
-        if (this.state.textIndex >= this.state.text.length && this.state.customisation) {
+        if (this.context.levelid === "9" && this.state.text.length - 1 == this.state.textIndex) {
+            this.setState({
+                showFinalCard: true
+            })
+        }
+
+        else if (this.state.textIndex >= this.state.text.length && this.state.customisation) {
             this.Engine = Engine.fromStartingPosition(this.state.customisation)
             this.forceUpdate()
         }
@@ -199,6 +231,14 @@ class Adventure extends React.Component<Props, State> {
     }
 
     render() {
+        if (this.state.allGames !== null && this.state.showFinalCard) {
+            return (
+                <div className="page-content">
+                    <AdventureResults games={this.state.allGames} />
+                </div>
+            )
+        }
+
         if (!this.state.text) {
             return (<>Loading...</>)
         }

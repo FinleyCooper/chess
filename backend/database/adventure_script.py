@@ -55,7 +55,7 @@ levels = [
             "aggressiveness": 30,
             "positionalPlay": 90,
             "tradeHappy": 20,
-            "blindSpots": 35,
+            "blindSpots": 30,
         },
     },
     {
@@ -77,7 +77,7 @@ levels = [
             "aggressiveness": 100,
             "positionalPlay": 30,
             "tradeHappy": 100,
-            "blindSpots": 35,
+            "blindSpots": 30,
         },
     },
     {
@@ -100,7 +100,7 @@ levels = [
             "aggressiveness": 20,
             "positionalPlay": 100,
             "tradeHappy": 30,
-            "blindSpots": 25,
+            "blindSpots": 20,
         },
     },
     {
@@ -124,7 +124,7 @@ levels = [
             "aggressiveness": 0,
             "positionalPlay": 0,
             "tradeHappy": 50,
-            "blindSpots": 20,
+            "blindSpots": 15,
         },
     },
     {
@@ -143,7 +143,7 @@ levels = [
             "aggressiveness": 40,
             "positionalPlay": 60,
             "tradeHappy": 30,
-            "blindSpots": 20,
+            "blindSpots": 15,
         },
     },
     {
@@ -162,7 +162,7 @@ levels = [
             "aggressiveness": 50,
             "positionalPlay": 80,
             "tradeHappy": 40,
-            "blindSpots": 15,
+            "blindSpots": 10,
         },
     },
     {

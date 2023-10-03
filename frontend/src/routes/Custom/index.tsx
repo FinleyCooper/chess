@@ -57,7 +57,6 @@ class Custom extends React.Component<Props, State> {
     }
 
     postGameResult(gameResult: string, winner: number) {
-        console.log("ere")
         this.setState({
             gameResult: gameResult
         })

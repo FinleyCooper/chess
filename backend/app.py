@@ -187,11 +187,11 @@ def archive_game(user_id: str = None, decoded_token: dict = {}):
     game_result = str(content.get("gameResult", ""))
     custom_settings = content.get("customSettings", {})
     human_plays_as = int(content.get("humanPlaysAs", 0))
-    winner = int(content.get("winner", 0))
+    winner = int(content.get("winner", -1))
     level_id = str(content.get("levelid", ""))
     campaign_id = str(content.get("campaignid", ""))
 
-    if not move_list or not game_result or not human_plays_as or not winner:
+    if not move_list or not game_result or not human_plays_as or (winner == -1):
         return jsonify({"error": True, "message": "All game data not provided in the request"}), 400
 
     user = db.get_user(_id=user_id)
