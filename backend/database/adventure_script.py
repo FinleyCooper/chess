@@ -9,7 +9,7 @@ levels = [
         ],
         "battle": {
             "name": "Glimbersnatch",
-            "depth": 1,
+            "depth": 2,
             "aggressiveness": 100,
             "positionalPlay": 0,
             "tradeHappy": 50,
@@ -31,7 +31,7 @@ levels = [
         ],
         "battle": {
             "name": "Bandit",
-            "depth": 1,
+            "depth": 2,
             "aggressiveness": 80,
             "positionalPlay": 80,
             "tradeHappy": 20,
@@ -73,7 +73,7 @@ levels = [
         ],
         "battle": {
             "name": "Troll",
-            "depth": 1,
+            "depth": 2,
             "aggressiveness": 100,
             "positionalPlay": 30,
             "tradeHappy": 100,
@@ -96,7 +96,7 @@ levels = [
         ],
         "battle": {
             "name": "Valnera Castle Guard",
-            "depth": 1,
+            "depth": 2,
             "aggressiveness": 20,
             "positionalPlay": 100,
             "tradeHappy": 30,
