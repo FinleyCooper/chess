@@ -31,14 +31,14 @@ class History extends React.Component<Props, State> {
         fetch(`/api/users/${this.context.id}/games/${id}/link`).then(resp => resp.json()).then(data => {
             if (!data.error) {
                 navigator.clipboard.writeText(`${window.location.origin}${data.data.linkPath}`)
-                alert("copied to clipboard")
+                alert("Copied shareable link to clipboard!")
             }
         })
 
     }
 
     render() {
-        const title = this.props.gameResult === "Draw" ? "Draw" : (this.props.humanPlaysAs === this.props.winner ? `Win ${this.props.gameResult}` : `Loss by ${this.props.gameResult}`)
+        const title = this.props.winner === 0 ? `Draw by ${this.props.gameResult}` : (this.props.humanPlaysAs === this.props.winner ? `Win by ${this.props.gameResult}` : `Loss by ${this.props.gameResult}`)
 
         return (
             <div className="game">

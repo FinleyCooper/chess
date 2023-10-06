@@ -2,6 +2,7 @@ import React from "react";
 import Engine from "../../engine";
 import Move from "../../engine/Move";
 import BoardElement from "../../components/BoardElement";
+import { Navigate } from "react-router-dom";
 
 import "./index.css"
 
@@ -13,11 +14,10 @@ interface State {
     game: Game | null
     moveIndex: number
     lastMove: Move | null
+    redirectToLogin: boolean
 }
 
-interface Props {
-
-}
+interface Props { }
 
 class Review extends React.Component<Props, State> {
     Engine: Engine
@@ -30,7 +30,8 @@ class Review extends React.Component<Props, State> {
             mouseY: 0,
             game: null,
             moveIndex: 0,
-            lastMove: null
+            lastMove: null,
+            redirectToLogin: false
         }
 
         this.Engine = Engine.fromStartingPosition()
@@ -52,6 +53,11 @@ class Review extends React.Component<Props, State> {
                             viewAs: data.data.human_plays_as,
                             winner: data.data.winner
                         }
+                    })
+                }
+                else {
+                    this.setState({
+                        redirectToLogin: true
                     })
                 }
             })
@@ -84,9 +90,13 @@ class Review extends React.Component<Props, State> {
     }
 
     render() {
+        if (this.state.redirectToLogin) {
+            return (<Navigate to="/login" />)
+        }
+
         return (
             <div className="review-container" onMouseMove={this.handleMouseMove}>
-                <div className="board-container">
+                <div className="review-board-container">
                     <BoardElement
                         sideFacingForward={this.state.game?.viewAs ? this.state.game.viewAs : 16}
                         onUserAttemptsMove={() => { }}
