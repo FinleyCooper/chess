@@ -89,11 +89,11 @@ class Engine {
         // When strength == 0, an addition of 50 noise should only happen in 1% of cases
         // So if X - N(0, variance_max) then P(x > 50) = 0.01
         // (X - u)/sd = Z 
-        // 50/sd_max = 2.3263 (from formula booklet)
+        // 50/sd_max = 2.3263 (from a level maths formula booklet)
         // sd_max = 50/2.3263 = 21.49 
         // We'll say sd_max should be about 25 for the weakest engine
         // f: [0, 100) -> (0, 25]
-        // We'll choose a linear relationship between strength and standard deviation, so f(x) = 25 - x/4
+        // We'll choose a inverse linear relationship between strength and standard deviation, so f(x) = 25 - x/4
         const standard_deviation = 25 - this.customisation.positionalPlay / 4
 
         tables.forEach(table => {
