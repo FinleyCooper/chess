@@ -107,6 +107,7 @@ function search(board: Board, customisation: Customisation = defaultCustomisatio
 
         if (seenMoves.length === 0) {
             estimatedMoveOrder = [0]
+            seenMoves = [moves[0]]
         }
         else {
             estimatedMoveOrder = sortMoves(board, seenMoves)
@@ -114,7 +115,7 @@ function search(board: Board, customisation: Customisation = defaultCustomisatio
 
 
         for (let i = 0; i < estimatedMoveOrder.length; i++) {
-            const move = moves[estimatedMoveOrder[i]]
+            const move = seenMoves[estimatedMoveOrder[i]]
             board.playMove(move)
 
             let evaluation;
