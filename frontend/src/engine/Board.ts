@@ -5,16 +5,16 @@ import Piece from './Pieces'
 import BasePiece from './Pieces/BasePiece'
 
 class Board {
-    sideToMove: number
-    epFile: number
-    castlingRights: number
-    sideToMoveIndex: number
-    pieceCapturedPlyBefore: number
-    pastGameStateStack: Array<number>
-    pastBoards: Array<number>
+    private sideToMove: number
+    private sideToMoveIndex: number
+    private pastBoards: Array<number>
+    private epFile: number
+    private castlingRights: number
+    private pieceCapturedPlyBefore: number
+    private pastGameStateStack: Array<number>
 
-    square: Array<BasePiece>
-    collections: Array<Array<SquareCollection>>
+    private square: Array<BasePiece>
+    private collections: Array<Array<SquareCollection>>
 
     constructor(binaryBoard: Uint8Array, gameState: number) {
         this.pastGameStateStack = [] // LIFO stack
@@ -51,7 +51,35 @@ class Board {
         this.updateAllPieceCollection()
     }
 
-    updateAllPieceCollection() {
+    hasPositionOccurredBefore(): boolean {
+        return this.pastBoards.includes(this.hashBoard())
+    }
+
+    getCollections(): Array<Array<SquareCollection>> {
+        return this.collections
+    }
+
+    getEpFile(): number {
+        return this.epFile
+    }
+
+    getSquares(): Array<BasePiece> {
+        return this.square
+    }
+
+    getSideToMove(): number {
+        return this.sideToMove
+    }
+
+    getSideToMoveIndex(): number {
+        return this.sideToMoveIndex
+    }
+
+    getCastlingRights(): number {
+        return this.castlingRights
+    }
+
+    private updateAllPieceCollection() {
         this.collections[Pieces.all] = [new SquareCollection(), new SquareCollection()]
         for (let i = 1; i < this.collections.length; i++) {
             for (let j = 0; j < 2; j++) {
@@ -113,7 +141,7 @@ class Board {
         return move
     }
 
-    hashBoard(): number {
+    private hashBoard(): number {
         return this.square.reduce((running_total, currentPiece, index) => {
             return running_total ^ (currentPiece.datum << (index >> 1)) // max index is 63, so max (index >> 1) is 31, within the javascript limit of 32 bits for bitwise operations 
         }, this.getGameState())
@@ -312,14 +340,14 @@ class Board {
     isSquareAttacked(square: number, attackerColour: number): boolean {
         const attackerColourIndex = attackerColour === Pieces.white ? 0 : 1
         const defenderColour = attackerColourIndex == 0 ? Pieces.black : Pieces.white
-        const blockers = this.collections[Pieces.all][attackerColourIndex].bitboard | this.collections[Pieces.all][1 - attackerColourIndex].bitboard
+        const blockers = this.collections[Pieces.all][attackerColourIndex].getBitboard() | this.collections[Pieces.all][1 - attackerColourIndex].getBitboard()
 
         // Looping over all pieces binary values
 
         for (let i = 1; i < Pieces.king + 1; i++) {
             const piece = Piece.FromBinary(i | defenderColour)
 
-            if (piece.getAttacks(square, blockers) & this.collections[i][attackerColourIndex].bitboard) {
+            if (piece.getAttacks(square, blockers) & this.collections[i][attackerColourIndex].getBitboard()) {
                 return true
             }
         }
@@ -342,14 +370,14 @@ class Board {
         const kingBitboard = this.collections[Pieces.king][this.sideToMoveIndex]
 
         let kingPosition = 0n
-        while (kingBitboard.bitboard >> kingPosition !== 1n) {
+        while (kingBitboard.getBitboard() >> kingPosition !== 1n) {
             kingPosition++
         }
 
-        const attacks = piece.getAttacks(Number(kingPosition), this.collections[Pieces.all][1 - this.sideToMoveIndex].bitboard)
-        const isPinning = attacks & this.collections[Pieces.bishop][1 - this.sideToMoveIndex].bitboard
-            | this.collections[Pieces.rook][1 - this.sideToMoveIndex].bitboard
-            | this.collections[Pieces.queen][1 - this.sideToMoveIndex].bitboard
+        const attacks = piece.getAttacks(Number(kingPosition), this.collections[Pieces.all][1 - this.sideToMoveIndex].getBitboard())
+        const isPinning = attacks & this.collections[Pieces.bishop][1 - this.sideToMoveIndex].getBitboard()
+            | this.collections[Pieces.rook][1 - this.sideToMoveIndex].getBitboard()
+            | this.collections[Pieces.queen][1 - this.sideToMoveIndex].getBitboard()
 
 
         // We only need to check moves of pinned pieces and king moves and en passant
@@ -390,7 +418,7 @@ class Board {
         const kingBitboard = this.collections[Pieces.king][sideToPlayIndex]
 
         let kingPosition = 0n
-        while (kingBitboard.bitboard >> kingPosition !== 1n) {
+        while (kingBitboard.getBitboard() >> kingPosition !== 1n) {
             kingPosition++
         }
 

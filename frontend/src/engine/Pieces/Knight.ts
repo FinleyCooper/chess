@@ -37,8 +37,8 @@ class Knight extends BasePiece {
 
         const pieceColourIndex = pieceColour == Pieces.white ? 0 : 1
 
-        const opponentPieces = board.collections[Pieces.all][1 - pieceColourIndex]
-        const friendlyPieces = board.collections[Pieces.all][pieceColourIndex]
+        const opponentPieces = board.getCollections()[Pieces.all][1 - pieceColourIndex]
+        const friendlyPieces = board.getCollections()[Pieces.all][pieceColourIndex]
 
         // Captures
         const captures = attacks.and(opponentPieces)

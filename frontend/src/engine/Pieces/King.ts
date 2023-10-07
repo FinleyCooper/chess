@@ -27,16 +27,16 @@ class King extends BasePiece {
         const opponentColour = pieceColour == Pieces.white ? Pieces.black : Pieces.white
 
         if (pieceColour === Pieces.white) {
-            castlingRights = board.castlingRights & 0b0011
+            castlingRights = board.getCastlingRights() & 0b0011
         }
         else {
-            castlingRights = (board.castlingRights & 0b1100) >> 2
+            castlingRights = (board.getCastlingRights() & 0b1100) >> 2
         }
 
         // King-side Castling
         if ((castlingRights & 0b01) === 0) {
             const indexesBetween = pieceColour === Pieces.white ? [5, 6] : [61, 62]
-            const isLegal = indexesBetween.every(i => board.square[i].getType() === Pieces.empty && !board.isSquareAttacked(i, opponentColour))
+            const isLegal = indexesBetween.every(i => board.getSquares()[i].getType() === Pieces.empty && !board.isSquareAttacked(i, opponentColour))
 
             if (isLegal && !board.isSquareAttacked(square, opponentColour)) {
                 moves.push(Move.fromCharacteristics(square + 2, square, false, false, false, 1))
@@ -49,10 +49,10 @@ class King extends BasePiece {
             const squareRookMovesThrough = pieceColour === Pieces.white ? 1 : 57
 
             const isLegal = indexesBetween.every(i => {
-                return board.square[i].getType() === Pieces.empty && !board.isSquareAttacked(i, opponentColour)
+                return board.getSquares()[i].getType() === Pieces.empty && !board.isSquareAttacked(i, opponentColour)
             })
 
-            if (isLegal && !board.isSquareAttacked(square, opponentColour) && board.square[squareRookMovesThrough].getType() === Pieces.empty) {
+            if (isLegal && !board.isSquareAttacked(square, opponentColour) && board.getSquares()[squareRookMovesThrough].getType() === Pieces.empty) {
                 moves.push(Move.fromCharacteristics(square - 2, square, false, false, false, 2))
             }
         }

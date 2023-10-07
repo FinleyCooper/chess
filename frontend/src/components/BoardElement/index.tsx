@@ -177,7 +177,7 @@ class BoardElement extends React.Component<Props, State> {
             )
 
 
-            let pieceNumericValue = this.props.board.square[i].datum
+            let pieceNumericValue = this.props.board.getSquares()[i].datum
 
             if (pieceNumericValue !== 0) { // not empty
                 pieces.push(

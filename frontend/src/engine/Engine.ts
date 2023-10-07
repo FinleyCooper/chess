@@ -23,10 +23,10 @@ export const defaultCustomisation: Customisation = {
 export type PieceSquareTable = Array<{ [key: number]: Array<number> }>
 
 class Engine {
-    board: Board
-    customisation: Customisation
-    pieceSquareTables: PieceSquareTable
-    moveHistory: Move[]
+    public board: Board
+    private customisation: Customisation
+    private pieceSquareTables: PieceSquareTable
+    private moveHistory: Array<Move>
 
 
     static fromStartingPosition(customisation: Customisation = defaultCustomisation) {
@@ -56,7 +56,11 @@ class Engine {
         this.pieceSquareTables = this.addNormalNoise(purePieceSquareTables)
     }
 
-    setAggression(sideTobeAggressive: number): void {
+    public getCustomisation() {
+        return this.customisation
+    }
+
+    public setAggression(sideTobeAggressive: number): void {
         // Add aggression for own table only
         const tableIndex: number = sideTobeAggressive === Pieces.white ? 0 : 1
 
@@ -68,7 +72,7 @@ class Engine {
         }
     }
 
-    addNormalNoise(tables: PieceSquareTable): PieceSquareTable {
+    private addNormalNoise(tables: PieceSquareTable): PieceSquareTable {
         // We will add normally distributed noise to each table depending on the positionalPlay value
 
         // Get a random number in the range (-∞,∞) distributed N(0,1)
@@ -121,12 +125,6 @@ class Engine {
                 resolve(move)
             }, 20)
         })
-    }
-
-    playerMove(move: Move): Move {
-        this.board.playMove(move)
-        this.moveHistory.push(move)
-        return move
     }
 
     playerUCIMove(from: number, to: number): Move {

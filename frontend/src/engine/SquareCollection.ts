@@ -1,10 +1,16 @@
 export default class SquareCollection {
-    public bitboard: bigint
-    protected iteratingBoard: bigint
+    private bitboard: bigint
+    private iteratingBoard: bigint
+
 
     constructor(bitboard: bigint = 0n) {
         this.bitboard = bitboard
         this.iteratingBoard = bitboard
+    }
+
+    getBitboard() {
+        return this.bitboard
+
     }
 
     add(square: number) {
@@ -28,18 +34,6 @@ export default class SquareCollection {
         return new SquareCollection((~this.bitboard) & 0xffffffffffffffffn)
     }
 
-    static flipVertically(bitboard: bigint) {
-        // NOT MY IMPLEMENTATION : Reference -> https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Horizontal
-        return ((bitboard << 56n)) |
-            ((bitboard << 40n) & (0x00ff000000000000n)) |
-            ((bitboard << 24n) & (0x0000ff0000000000n)) |
-            ((bitboard << 8n) & (0x000000ff00000000n)) |
-            ((bitboard >> 8n) & (0x00000000ff000000n)) |
-            ((bitboard >> 24n) & (0x0000000000ff0000n)) |
-            ((bitboard >> 40n) & (0x000000000000ff00n)) |
-            ((bitboard >> 56n));
-    }
-
     *[Symbol.iterator]() {
         for (let i = 0; i < 64; i++) {
             if (i == 0) {
@@ -51,23 +45,5 @@ export default class SquareCollection {
             this.iteratingBoard >>= 1n
         }
         this.iteratingBoard = this.bitboard
-    }
-
-    log() {
-        // Generated automatically using Github Copilot
-        let bitboard = SquareCollection.flipVertically(this.bitboard)
-
-        let str = ''
-        for (let i = 0; i < 64; i++) {
-            if (bitboard & (1n << BigInt(i))) {
-                str += '1'
-            } else {
-                str += '0'
-            }
-            if (i % 8 === 7) {
-                str += '\n'
-            }
-        }
-        console.log(str)
     }
 }

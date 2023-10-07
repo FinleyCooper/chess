@@ -36,22 +36,22 @@ export function getSlidingPieceAttacks(square: number, offsets: Array<number>, b
 export function generateSliderMoves(square: number, pieceColour: number, offsets: Array<number>, board: Board, distance: number = 8) {
     const pieceColourIndex = pieceColour == Pieces.white ? 0 : 1
 
-    const opponentPieces = board.collections[Pieces.all][1 - pieceColourIndex]
-    const friendlyPieces = board.collections[Pieces.all][pieceColourIndex]
+    const opponentPieces = board.getCollections()[Pieces.all][1 - pieceColourIndex]
+    const friendlyPieces = board.getCollections()[Pieces.all][pieceColourIndex]
 
-    const attacks = getSlidingPieceAttacks(square, offsets, opponentPieces.or(friendlyPieces).bitboard, distance)
+    const attacks = getSlidingPieceAttacks(square, offsets, opponentPieces.or(friendlyPieces).getBitboard(), distance)
 
     let moves: Array<Move> = []
 
     // Captures
-    const captures = attacks & opponentPieces.bitboard
+    const captures = attacks & opponentPieces.getBitboard()
 
     for (const captureSquare of new SquareCollection(captures)) {
         moves.push(Move.fromCharacteristics(captureSquare, square, true))
     }
 
     // Quiet Moves
-    const quietMoves = attacks & (opponentPieces.or(friendlyPieces).not()).bitboard
+    const quietMoves = attacks & (opponentPieces.or(friendlyPieces).not()).getBitboard()
 
     for (const quietMove of new SquareCollection(quietMoves)) {
         moves.push(Move.fromCharacteristics(quietMove, square))

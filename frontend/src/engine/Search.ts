@@ -34,8 +34,8 @@ function sortMoves(board: Board, moves: Array<Move>) {
 function getEstimatedMoveGoodness(board: Board, move: Move) {
     let estimatedMoveGoodness = 0
 
-    const destinationPiece = board.square[move.getDestinationSquare()]
-    const sourcePiece = board.square[move.getSourceSquare()]
+    const destinationPiece = board.getSquares()[move.getDestinationSquare()]
+    const sourcePiece = board.getSquares()[move.getSourceSquare()]
 
     // Capture difference
     estimatedMoveGoodness += Math.max(pieceValue[destinationPiece.getType()] - pieceValue[sourcePiece.getType()], 0)
@@ -120,7 +120,7 @@ function search(board: Board, customisation: Customisation = defaultCustomisatio
 
             let evaluation;
 
-            if (board.pastBoards.includes(board.hashBoard()) && depth < maxDepth) {
+            if (board.hasPositionOccurredBefore() && depth < maxDepth) {
                 board.unplayMove(move)
                 return 0 // Cut the branch as a draw
             }

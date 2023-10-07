@@ -97,7 +97,7 @@ class Custom extends React.Component<Props, State> {
 
     checkIfGameover() {
         if (this.Engine?.board.isCheckmate()) {
-            this.postGameResult("Checkmate", this.Engine.board.sideToMove === Pieces.white ? Pieces.black : Pieces.white)
+            this.postGameResult("Checkmate", this.Engine.board.getSideToMove() === Pieces.white ? Pieces.black : Pieces.white)
             return true
         }
         if (this.Engine?.board.isStalemate()) {

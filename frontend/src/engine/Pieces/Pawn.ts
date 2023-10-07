@@ -53,7 +53,7 @@ class Pawn extends BasePiece {
 
         const promotationRank = pieceColour == Pieces.white ? 6 : 1
 
-        if (board.square[squareAhead].getType() == Pieces.empty) {
+        if (board.getSquares()[squareAhead].getType() == Pieces.empty) {
             if (rank === promotationRank) {
                 for (let i = 1; i < 5; i++) {
                     moves.push(Move.fromCharacteristics(squareAhead, square, false, false, false, 0, i))
@@ -67,7 +67,7 @@ class Pawn extends BasePiece {
                 if (isFirstMove) {
                     const squareTwoAhead = squareAhead + movementDirection * 8
 
-                    if (board.square[squareTwoAhead].getType() == Pieces.empty) {
+                    if (board.getSquares()[squareTwoAhead].getType() == Pieces.empty) {
                         moves.push(Move.fromCharacteristics(squareTwoAhead, square, false, true))
                     }
                 }
@@ -76,11 +76,11 @@ class Pawn extends BasePiece {
         }
 
         // En passant
-        if (board.epFile !== 0) {
+        if (board.getEpFile() !== 0) {
             const LHCaptureSquare: number = square + movementDirection * 7
             const RHCaptureSquare: number = square + movementDirection * 9
             const epRank = pieceColour === Pieces.white ? 4 : 3
-            const epFile = board.epFile - 1
+            const epFile = board.getEpFile() - 1
 
             if (epRank === rank && (epFile - 1 === file || epFile + 1 === file)) {
                 const enPassantCaptureSquare = movementDirection * epFile > movementDirection * file ? RHCaptureSquare : LHCaptureSquare
@@ -93,7 +93,7 @@ class Pawn extends BasePiece {
         const attacks = new SquareCollection(this.getAttacks(square, 0n))
 
         // Bitwise AND on the attacks and the opponent's pieces to see which attacks are actually captures
-        const captures = attacks.and(board.collections[Pieces.all][1 - pieceColourIndex])
+        const captures = attacks.and(board.getCollections()[Pieces.all][1 - pieceColourIndex])
 
         for (const captureSquare of captures) {
             if (rank === promotationRank) {

@@ -28,9 +28,9 @@ export const Pieces = {
 class Move {
     readonly datum: number
 
-    protected static destinationSquareMask: number = 0xFC00
-    protected static sourceSquareMask: number = 0x03F0
-    protected static flagMask: number = 0x000F
+    private static destinationSquareMask: number = 0xFC00
+    private static sourceSquareMask: number = 0x03F0
+    private static flagMask: number = 0x000F
 
     static fromCharacteristics(
         dest: number,
