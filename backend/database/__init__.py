@@ -65,7 +65,7 @@ class Database:
             """
                     SELECT Links.*, GameHistory.Userid
                     FROM Links
-                    JOIN GameHistory ON Links.Gameid = GameHistory.Gameid
+                    INNER JOIN GameHistory ON Links.Gameid = GameHistory.Gameid
                     WHERE Links.LinkURL = ?
                 """,
             (link_suffix,),
