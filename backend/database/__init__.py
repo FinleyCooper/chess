@@ -158,7 +158,7 @@ class Database:
                 """
                     SELECT Users.*, UserCampaign.Levelid
                     FROM Users
-                    JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
+                    INNER JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
                     WHERE UserCampaign.Userid = ?
                 """,
                 (_id,),
