@@ -65,7 +65,7 @@ class Database:
             """
                     SELECT Links.*, GameHistory.Userid
                     FROM Links
-                    JOIN GameHistory ON Links.Gameid = GameHistory.Gameid
+                    INNER JOIN GameHistory ON Links.Gameid = GameHistory.Gameid
                     WHERE Links.LinkURL = ?
                 """,
             (link_suffix,),
@@ -158,7 +158,7 @@ class Database:
                 """
                     SELECT Users.*, UserCampaign.Levelid
                     FROM Users
-                    JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
+                    INNER JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
                     WHERE UserCampaign.Userid = ?
                 """,
                 (_id,),
@@ -168,7 +168,7 @@ class Database:
                 """
                     SELECT Users.*, UserCampaign.Levelid
                     FROM Users
-                    JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
+                    INNER JOIN UserCampaign ON Users.Userid = UserCampaign.Userid
                     WHERE Users.Email = ?
                 """,
                 (email,),
