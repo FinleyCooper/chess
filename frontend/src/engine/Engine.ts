@@ -95,10 +95,10 @@ class Engine {
         // (X - u)/sd = Z 
         // 50/sd_max = 2.3263 (from a level maths formula booklet)
         // sd_max = 50/2.3263 = 21.49 
-        // We'll say sd_max should be about 25 for the weakest engine
-        // f: [0, 100) -> (0, 25]
-        // We'll choose a inverse linear relationship between strength and standard deviation, so f(x) = 25 - x/4
-        const standard_deviation = 25 - this.customisation.positionalPlay / 4
+        // We'll say sd_max should be about 20 for the weakest engine
+        // f: [0, 100) -> (0, 20]
+        // We'll choose a inverse linear relationship between strength and standard deviation, so f(x) = 20 - x/5
+        const standard_deviation = 20 - this.customisation.positionalPlay / 5
 
         tables.forEach(table => {
             for (const key in table) {

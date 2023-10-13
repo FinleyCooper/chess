@@ -15,7 +15,7 @@ def create_tables(connection):
         );
 
         CREATE TABLE IF NOT EXISTS CampaignLevels (
-            Levelid INTEGER PRIMARY KEY NOT NULL,
+            Levelid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             Text TEXT NOT NULL,
             BattleSettings TEXT
         );
