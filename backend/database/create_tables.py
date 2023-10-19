@@ -40,7 +40,7 @@ def create_tables(connection):
             Campaignid INTEGER,
             Levelid INTEGER,
             FOREIGN KEY (Campaignid) REFERENCES UserCampaign (Campaignid),
-            FOREIGN KEY (Userid) REFERENCES Users (Userid),
+            FOREIGN KEY (Userid) REFERENCES Users (Userid) ON DELETE CASCADE,
             FOREIGN KEY (Levelid) REFERENCES CampaignLevels (Levelid)
         );
 
@@ -50,7 +50,7 @@ def create_tables(connection):
             CreatedAt TIMESTAMP NOT NULL,
             ExpiresAt TIMESTAMP NOT NULL,
             Gameid INTEGER NOT NULL,
-            FOREIGN KEY (Gameid) REFERENCES GameHistory (Gameid)
+            FOREIGN KEY (Gameid) REFERENCES GameHistory (Gameid) ON DELETE CASCADE
         );
     """
     )

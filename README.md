@@ -3,7 +3,7 @@
 ## TODO
 - Round up when finishing the adventure  
 - Allow the user to play the adventure again  
-
+- Change the hash map to an array
 
 # Copyright
 Settings symbol SVG:  

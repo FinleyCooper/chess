@@ -145,6 +145,7 @@ class EllipticCurve:
     def verifySignature(self, binary: bytes, signature: int, public_key_int: int) -> bool:
         # General steps from https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
         # Section 6.4.2 ECDSA Signature Verification Algorithm
+        # Unsplit the public key from its to parts
         public_key = (public_key_int >> self.n_bitlength, public_key_int & ((2**self.n_bitlength - 1)))
 
         if public_key == self.point_at_infinity:
