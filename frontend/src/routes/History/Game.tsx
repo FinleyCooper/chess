@@ -46,7 +46,7 @@ class History extends React.Component<Props, State> {
                 <p>Played as {this.props.humanPlaysAs === 16 ? "white" : "black"}</p>
                 <p>Moves: {Math.ceil(this.props.moveList.split(" ").length / 2)}</p>
                 <Link to={`/review?gameid=${this.props.id}&userid=${this.context.id}`}>Review</Link>
-                <p onClick={(e) => this.createLink(e, this.props.id)}>Share</p>
+                <p tabIndex={0} onClick={(e) => this.createLink(e, this.props.id)}>Share</p>
             </div>
         )
     }

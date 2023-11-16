@@ -32,25 +32,25 @@ class Home extends React.Component<Props, State> {
             <div className="home-container">
                 <h1 className='page-title'>{"{ thochess }"}</h1>
                 <div className="option-container">
-                    <div onClick={(e) => this.redirect("/adventure")} className="option">
+                    <div tabIndex={0} onClick={(e) => this.redirect("/adventure")} className="option">
                         <p className="option-title">Continue Adventure</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#adventure-symbol`} />
                         </svg>
                     </div>
-                    <div onClick={(e) => this.redirect("/custom")} className="option">
+                    <div tabIndex={0} onClick={(e) => this.redirect("/custom")} className="option">
                         <p className="option-title">Custom Game</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#customisation-symbol`} />
                         </svg>
                     </div>
-                    <div onClick={(e) => this.redirect("/history")} className="option">
+                    <div tabIndex={0} onClick={(e) => this.redirect("/history")} className="option">
                         <p className="option-title">View Game History</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#analysis-symbol`} />
                         </svg>
                     </div>
-                    <div onClick={(e) => this.redirect("/settings")} className="option">
+                    <div tabIndex={0} onClick={(e) => this.redirect("/settings")} className="option">
                         <p className="option-title">Settings</p>
                         <svg className="option-icon" viewBox='0 0 100 100'>
                             <use href={`${pieceSVGs}#settings-symbol`} />

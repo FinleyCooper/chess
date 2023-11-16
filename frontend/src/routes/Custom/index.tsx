@@ -179,7 +179,7 @@ class Custom extends React.Component<Props, State> {
         ) :
             (
                 <div className="customisation-container">
-                    <div className="customisation-option-container">
+                    <div tabIndex={0} className="customisation-option-container">
                         <div className={`customisation-option${this.state.playingAs === Pieces.white ? " active" : ""}`} onClick={() => this.setState({ playingAs: Pieces.white })}>
                             <p className="customisation-option-title">Play as White</p>
                             <svg className="customisation-option-icon" viewBox='0 0 100 100'>
@@ -193,7 +193,7 @@ class Custom extends React.Component<Props, State> {
                             </svg>
                         </div>
                     </div>
-                    <div className="customisation-sliders-container">
+                    <div tabIndex={0} className="customisation-sliders-container">
                         <CustomisationSlider onChange={this.handleSliderChange} label="Engine Depth" min={1} max={4} default={defaultCustomisation.depth} />
                         <CustomisationSlider onChange={this.handleSliderChange} label="Positional Strength" min={0} max={100} default={defaultCustomisation.positionalPlay} />
                         <CustomisationSlider onChange={this.handleSliderChange} label="Aggressiveness" min={0} max={100} default={defaultCustomisation.aggressiveness} />
@@ -201,7 +201,7 @@ class Custom extends React.Component<Props, State> {
                         <CustomisationSlider onChange={this.handleSliderChange} label="Piece Exchanging Tendency" min={0} max={100} default={defaultCustomisation.tradeHappy} />
 
                     </div>
-                    <div className="submit-container" onClick={this.startGame}>
+                    <div tabIndex={0} className="submit-container" onClick={this.startGame}>
                         <p>Play</p>
                     </div>
                 </div>

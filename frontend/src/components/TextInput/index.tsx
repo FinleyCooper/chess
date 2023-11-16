@@ -11,6 +11,7 @@ interface Props {
     pattern?: string,
     type?: string,
     name?: string,
+    autocomplete?: string
 }
 
 interface State {
@@ -45,7 +46,7 @@ class TextInput extends React.Component<Props, State> {
             <>
                 <p className="input-label">{this.props.label}</p>
                 <div className={className}>
-                    <input className="text-input" onFocus={this.handleFocus} onBlur={this.handleBlur} onChange={this.props.onChange || (() => { })} pattern={this.props.pattern} type={this.props.type || "text"} name={this.props.name} />
+                    <input className="text-input" onFocus={this.handleFocus} onBlur={this.handleBlur} onChange={this.props.onChange || (() => { })} pattern={this.props.pattern} type={this.props.type || "text"} name={this.props.name} autoComplete={this.props.autocomplete ?? "on"} />
                 </div>
                 <p className="error-text">{this.props.error}</p>
             </>
